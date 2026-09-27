@@ -359,6 +359,8 @@ export class ProgramExpenditureComponent implements OnInit {
          if(data){
            this.getBulkByItem = data;
            this.BulkExpenditureForm.patchValue({"purchasedQuantity": this.getBulkByItem?.purchasedQuantity,"unitCost": this.getBulkByItem?.unitCost,"purchaseDate":this.convertToISOFormat(this.getBulkByItem?.purchaseDate),"consumedQuantityFromBulk": this.getBulkByItem?.consumedQuantity,"bulkExpenditureId": this.getBulkByItem?.bulkExpenditureId,"availableQuantity": this.getBulkByItem?.availableQuantity})
+           // unit cost just changed with the item - the old allocated cost is stale
+           this.calcCostAllocated(this.fBulk['consumedQuantity'].value)
          }
         },
         error: (err: any) => {
@@ -368,7 +370,14 @@ export class ProgramExpenditureComponent implements OnInit {
     }
   }
   calcCostAllocated(Val:any){
-    this.fBulk['allocatedCost'].setValue(Val*this.fBulk['unitCost'].value)
+    const qty = Number(Val);
+    const unitCost = Number(this.fBulk['unitCost'].value);
+    if (!qty || !unitCost || isNaN(qty) || isNaN(unitCost)) {
+      this.fBulk['allocatedCost'].setValue('');
+      return;
+    }
+    // round to paise, the raw product carries float noise (e.g. 338.4912959 * 3)
+    this.fBulk['allocatedCost'].setValue(Number((qty * unitCost).toFixed(2)));
   }
   
   isEdit:any=false

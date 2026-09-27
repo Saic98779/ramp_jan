@@ -531,7 +531,7 @@
                             </div>
                             <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                                 <div class="form-floating mb-3">
-                                    <input type="text" readonly class="form-control" formControlName="unitCost"   name="unitCost"  id="bill" placeholder="bill">
+                                    <input type="text" readonly class="form-control" [value]="(fBulk['unitCost'].value | number:'1.2-2') || ''"   name="unitCost"  id="bill" placeholder="bill">
                                     <label for="bill">Unit Price</label>
                                 </div>
                                 <div *ngIf="fPre['cost'].errors?.['pattern']" class="error">

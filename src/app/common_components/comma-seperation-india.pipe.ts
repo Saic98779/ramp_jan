@@ -26,9 +26,12 @@ export class CommaSeperationIndiaPipe implements PipeTransform {
     const isNegative = num < 0;
     const absNum = Math.abs(num);
 
+    // Round to paise - raw values carry float noise (e.g. 340.08510636)
+    const rounded = Math.round(absNum * 100) / 100;
+
     // Check if number has decimals
-    const hasDecimals = absNum % 1 !== 0;
-    const parts = absNum.toString().split('.');
+    const hasDecimals = rounded % 1 !== 0;
+    const parts = rounded.toString().split('.');
     let integerPart = parts[0];
     const decimalPart = hasDecimals ? `.${parts[1]}` : '';
     
