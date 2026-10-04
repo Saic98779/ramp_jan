@@ -74,7 +74,7 @@ toggleZoom() {
     const ext = path.split('.').pop()?.toLowerCase();
     if (ext?.match(/(jpg|jpeg|png|gif|bmp)/)) return 'image';
     if (ext === 'pdf') return 'pdf';
-    if (ext?.match(/(xls|xlsx|csv)/)) return 'excel';
+    if (ext?.match(/(xls|xlsx|csv|doc|docx|ppt|pptx)/)) return 'excel';
     return 'other';
   }
 

@@ -48,7 +48,7 @@
       </div>
 
       <div class="card budgets mb-3 "
-        *ngIf="selectedActivity=='20' || selectedActivity=='21' || selectedActivity=='22'|| selectedActivity=='106' || selectedActivity=='108'">
+        *ngIf="selectedActivity=='20' || selectedActivity=='21' || selectedActivity=='22'|| selectedActivity=='106' || selectedActivity=='108' || selectedActivity=='109'">
 
         <div class="card-header bg-transparent d-flex justify-content-between">
           <h6 class="fw-600 mb-2 mb-sm-3 mb-md-0"> {{getSubactivities(selectedBudgetHead)}} </h6>
@@ -62,7 +62,7 @@
           <!-- selectedBudgetHead=='83' -->
           
           <div class="row"
-            *ngIf="selectedBudgetHead=='77' || selectedBudgetHead=='78' || selectedBudgetHead=='79'  || selectedBudgetHead=='142' ||  selectedBudgetHead=='144' || selectedBudgetHead=='143' || selectedBudgetHead=='80' || selectedBudgetHead=='81' || selectedBudgetHead=='82' || selectedBudgetHead=='84'  || selectedBudgetHead=='19'">
+            *ngIf="selectedBudgetHead=='77' || selectedBudgetHead=='78' || selectedBudgetHead=='79'  || selectedBudgetHead=='142' ||  selectedBudgetHead=='144' || selectedBudgetHead=='143' || selectedBudgetHead=='80' || selectedBudgetHead=='81' || selectedBudgetHead=='82' || selectedBudgetHead=='83' || selectedBudgetHead=='84'  || selectedBudgetHead=='19'">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
               <fieldset class="mb-3" style="border: 1px solid #e0e0e0; border-radius: 8px; padding-left: 18px; ">
                 <legend class="text-lime-green" style="padding: 0 8px;">Physical</legend>
@@ -184,8 +184,8 @@
             </div>
           </div>
 
-          <!-- Vendor Management Section for Budget Heads 79, 80, 81 -->
-          <div class="card" *ngIf="selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81'  || selectedBudgetHead=='142' ||  selectedBudgetHead=='144' || selectedBudgetHead=='143'">
+          <!-- Vendor Management Section for Budget Heads 79, 80, 81 (hidden for physical-report budgets) -->
+          <div class="card" *ngIf="!isPhysicalReportBudget && (selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81'  || selectedBudgetHead=='142' ||  selectedBudgetHead=='144' || selectedBudgetHead=='143')">
             <div class="card-header bg-transparent">
               <div class="row align-items-center">
                 <div class="col-8 col-sm-8 col-md-9 col-lg-10">
@@ -245,7 +245,7 @@
           </div>
           <!-- Expenditure Section for selectedBudgetHead===89 -->
           <div class="card"
-            *ngIf="selectedBudgetHead=='77' || selectedBudgetHead=='78' || selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81'  || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144'">
+            *ngIf="selectedBudgetHead=='77' || selectedBudgetHead=='78' || selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81' || selectedBudgetHead=='83'  || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144'">
             <div class="card-header bg-transparent">
               <div class="row align-items-center">
                 <div class="col-8 col-sm-8 col-md-9 col-lg-10">
@@ -266,50 +266,75 @@
                     <tr>
                       <th>S.No</th>
                       <th *ngIf="selectedBudgetHead=='77' || selectedBudgetHead=='78'">Date of Payment</th>
-                      <th *ngIf="selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81' || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144'">
+                      <th *ngIf="!isPhysicalReportBudget && (selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81' || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144')">
                         Vendor Company Name</th>
                       <th>Expenditure Amount</th>
                       <th>Bill No.</th>
                       <th>Bill Date</th>
                       <th>Mode Of Payment</th>
                       <th>Payee Name</th>
-                      <th>Account Number</th>
-                      <th>Bank Name</th>
-                      <th>IFSC Code</th>
-                      <th>Transaction Id</th>
-                      <th>Cheque Number</th>
-                      <th>Cheque Date</th>
+                      <th *ngIf="!isPhysicalReportBudget">Account Number</th>
+                      <th *ngIf="!isPhysicalReportBudget">Bank Name</th>
+                      <th *ngIf="!isPhysicalReportBudget">IFSC Code</th>
+                      <th *ngIf="!isPhysicalReportBudget">Transaction Id</th>
+                      <th *ngIf="!isPhysicalReportBudget">Cheque Number</th>
+                      <th *ngIf="!isPhysicalReportBudget">Cheque Date</th>
+                      <th *ngIf="isPhysicalReportBudget">Details of Achievement</th>
+                      <th *ngIf="isPhysicalReportBudget">Supporting Document</th>
                       <th>View Bill Invoice</th>
+                      <th *ngIf="isPhysicalReportBudget" class="text-center">Approval Status</th>
                       <th class="text-center">Edit / Delete</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngIf="!getPreliminaryData || getPreliminaryData.length === 0">
-                      <td colspan="15" class="text-center text-muted">Data Not available.</td>
+                      <td [attr.colspan]="isPhysicalReportBudget ? 12 : 15" class="text-center text-muted">Data Not available.</td>
                     </tr>
                     <tr *ngFor="let preliminary of getPreliminaryData; let i = index">
                       <td>{{ i + 1 }}</td>
                       <td *ngIf="selectedBudgetHead=='77' || selectedBudgetHead=='78'" class="noWrap">
                         {{ preliminary?.paymentDate }}</td>
-                      <td *ngIf="selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81'  || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144'">
+                      <td *ngIf="!isPhysicalReportBudget && (selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81'  || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144')">
                         {{ preliminary?.category }}</td>
                       <td>{{ preliminary?.expenditureAmount | commaSeperationIndia }}</td>
                       <td>{{ preliminary?.billNo }}</td>
                       <td class="noWrap">{{ preliminary?.billDate }}</td>
                       <td>{{ preliminary?.modeOfPayment }}</td>
                       <td>{{ preliminary?.payeeName }}</td>
-                      <td>{{ preliminary?.accountNumber }}</td>
-                      <td>{{ preliminary?.bankName }}</td>
-                      <td>{{ preliminary?.ifscCode }}</td>
-                      <td>{{ preliminary?.transactionId }}</td>
-                      <td>{{preliminary?.checkNo }}</td>
-                      <td class="noWrap">{{preliminary?.checkDate }}</td>
+                      <td *ngIf="!isPhysicalReportBudget">{{ preliminary?.accountNumber }}</td>
+                      <td *ngIf="!isPhysicalReportBudget">{{ preliminary?.bankName }}</td>
+                      <td *ngIf="!isPhysicalReportBudget">{{ preliminary?.ifscCode }}</td>
+                      <td *ngIf="!isPhysicalReportBudget">{{ preliminary?.transactionId }}</td>
+                      <td *ngIf="!isPhysicalReportBudget">{{preliminary?.checkNo }}</td>
+                      <td *ngIf="!isPhysicalReportBudget" class="noWrap">{{preliminary?.checkDate }}</td>
+                      <td *ngIf="isPhysicalReportBudget">
+                        <div class="cell-tooltip-wrap">
+                          <div class="text-truncate" style="max-width: 240px;">{{ preliminary?.achievementDetails }}</div>
+                          <span class="cell-tooltip" *ngIf="preliminary?.achievementDetails">{{ preliminary?.achievementDetails }}</span>
+                        </div>
+                      </td>
+                      <td *ngIf="isPhysicalReportBudget" class="text-center">
+                        <a *ngIf="preliminary?.supportDocumentUrl" class="btn btn-default text-primary btn-sm"
+                          (click)="downloadSupportDocument(preliminary.supportDocumentUrl)"
+                          title="Download">
+                          <span class="bi bi-download"></span>
+                        </a>
+                        <span *ngIf="!preliminary?.supportDocumentUrl" class="text-muted">No file</span>
+                      </td>
                       <td class="text-center">
                         <a *ngIf="preliminary?.uploadBillUrl" class="btn btn-default text-primary btn-sm"
                           (click)="showFileViewer(preliminary.uploadBillUrl)">
                           <span class="bi bi-eye"></span>
                         </a>
                         <span *ngIf="!preliminary?.uploadBillUrl" class="text-muted">No file</span>
+                      </td>
+                      <td *ngIf="isPhysicalReportBudget" class="text-center">
+                        <span class="badge"
+                          [ngClass]="preliminary?.status === 'Approved' ? 'bg-success' :
+                                      preliminary?.status === 'Rejected' ? 'bg-danger' :
+                                      preliminary?.status ? 'bg-warning' : 'bg-secondary'">
+                          {{ preliminary?.status || 'Pending' }}
+                        </span>
                       </td>
                       <td class="text-center">
                         <button type="button" class="btn btn-default text-lime-green btn-sm"
@@ -1223,9 +1248,9 @@
                 <label for="agencyId">Agency ID</label>
               </div>
             </div>
-            <!-- Vendor Dropdown -->
+            <!-- Vendor Dropdown (hidden for physical-report budgets) -->
             <div class="col-12 col-sm-6 col-md-4 col-lg-4"
-              *ngIf="selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81'  || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144'">
+              *ngIf="!isPhysicalReportBudget && (selectedBudgetHead=='79' || selectedBudgetHead=='80' || selectedBudgetHead=='81'  || selectedBudgetHead=='142' || selectedBudgetHead=='143' ||  selectedBudgetHead=='144')">
               <div class="form-floating mb-3">
                 <select class="form-select" formControlName="category"
                   [class.is-invalid]="isSubmitted && f['vendorId'].invalid">
@@ -1242,11 +1267,11 @@
             </div>
             <!-- Payment Date -->
             <div class="col-12 col-sm-6 col-md-4 col-lg-4"
-              *ngIf="selectedBudgetHead!='79' && selectedBudgetHead!='80' && selectedBudgetHead!='81'  && selectedBudgetHead!='142' && selectedBudgetHead!='143' && selectedBudgetHead!='144'">
+              *ngIf="isPhysicalReportBudget || (selectedBudgetHead!='79' && selectedBudgetHead!='80' && selectedBudgetHead!='81' && selectedBudgetHead!='142' && selectedBudgetHead!='143' && selectedBudgetHead!='144')">
               <div class="form-floating mb-3">
                 <input type="date" class="form-control" formControlName="paymentDate" appDisableFutureDates
                   [class.is-invalid]="isSubmitted && f['paymentDate'].invalid">
-                <label for="paymentDate">Date of Payment</label>
+                <label for="paymentDate">Payment Date</label>
                 <div *ngIf="isSubmitted && f['paymentDate'].invalid" class="invalid-feedback">
                   <span *ngIf="f['paymentDate'].errors?.['required']">Payment date is required</span>
                 </div>
@@ -1258,13 +1283,12 @@
               <div class="form-floating mb-3">
                 <input type="number" class="form-control" formControlName="expenditureAmount"
                   [class.is-invalid]="isSubmitted && f['expenditureAmount'].invalid">
-                <label for="expenditureAmount">Expenditure Amount</label>
+                <label for="expenditureAmount">Amount</label>
                 <div *ngIf="isSubmitted && f['expenditureAmount'].invalid" class="invalid-feedback">
                   <span *ngIf="f['expenditureAmount'].errors?.['required']">Expenditure amount is required</span>
                   <span *ngIf="f['expenditureAmount'].errors?.['min']">Amount must be greater than 0</span>
-                   <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed ₹50,00,000</span>
+                  <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed ₹50,00,000</span>
                 </div>
-                
               </div>
             </div>
 
@@ -1273,9 +1297,9 @@
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" formControlName="billNo"
                   [class.is-invalid]="isSubmitted && f['billNo'].invalid">
-                <label for="billNo">Bill No</label>
+                <label for="billNo">Bill No.</label>
                 <div *ngIf="isSubmitted && f['billNo'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['billNo'].errors?.['required']">Bill number is required</span>
+                  Bill number is required
                 </div>
               </div>
             </div>
@@ -1287,7 +1311,25 @@
                   [class.is-invalid]="isSubmitted && f['billDate'].invalid">
                 <label for="billDate">Bill Date</label>
                 <div *ngIf="isSubmitted && f['billDate'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['billDate'].errors?.['required']">Bill date is required</span>
+                  Bill date is required
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode Of Payment -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+              <div class="form-floating mb-3">
+                <select class="form-select" formControlName="modeOfPayment"
+                  (change)="modeOfPaymentIt($any($event.target).value)"
+                  [class.is-invalid]="isSubmitted && f['modeOfPayment'].invalid">
+                  <option value="BANK_TRANSFER">Bank Transfer</option>
+                  <option value="CASH">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="CHEQUE">CHEQUE</option>
+                </select>
+                <label for="modeOfPayment">Mode Of Payment</label>
+                <div *ngIf="isSubmitted && f['modeOfPayment'].invalid" class="invalid-feedback">
+                  Payment mode is required
                 </div>
               </div>
             </div>
@@ -1299,63 +1341,54 @@
                   [class.is-invalid]="isSubmitted && f['payeeName'].invalid">
                 <label for="payeeName">Payee Name</label>
                 <div *ngIf="isSubmitted && f['payeeName'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['payeeName'].errors?.['required']">Payee name is required</span>
+                  Payee name is required
                 </div>
               </div>
             </div>
 
             <!-- Account Number -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4"
+              *ngIf="f['modeOfPayment']?.value === 'BANK_TRANSFER' || f['modeOfPayment']?.value === 'CHEQUE'">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" formControlName="accountNumber"
                   [class.is-invalid]="isSubmitted && f['accountNumber'].invalid">
                 <label for="accountNumber">Account Number</label>
                 <div *ngIf="isSubmitted && f['accountNumber'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['accountNumber'].errors?.['required']">Account number is required</span>
+                  Please enter a valid account number
                 </div>
+              </div>
+            </div>
+
+            <!-- Transaction ID -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4" *ngIf="f['modeOfPayment']?.value === 'UPI'">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" formControlName="transactionId">
+                <label for="transactionId">Transaction Id</label>
               </div>
             </div>
 
             <!-- Bank Name -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4"
+              *ngIf="f['modeOfPayment']?.value === 'BANK_TRANSFER' || f['modeOfPayment']?.value === 'CHEQUE'">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" formControlName="bankName"
                   [class.is-invalid]="isSubmitted && f['bankName'].invalid">
-                <label for="bankName">Bank Name</label>
+                <label for="bankName">Bank</label>
                 <div *ngIf="isSubmitted && f['bankName'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['bankName'].errors?.['required']">Bank name is required</span>
+                  Bank name is required
                 </div>
               </div>
             </div>
 
-            <!-- Mode of Payment -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-              <div class="form-floating mb-3">
-                <select class="form-select" formControlName="modeOfPayment"
-                  (change)="modeOfPaymentIt($any($event.target).value)"
-                  [class.is-invalid]="isSubmitted && f['modeOfPayment'].invalid">
-                  <option value="">Select Mode of Payment</option>
-                  <option value="CASH">Cash</option>
-                  <option value="BANK_TRANSFER">Bank Transfer</option>
-                  <option value="UPI">UPI</option>
-                  <option value="CHEQUE">Cheque</option>
-                </select>
-                <label for="modeOfPayment">Mode of Payment</label>
-                <div *ngIf="isSubmitted && f['modeOfPayment'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['modeOfPayment'].errors?.['required']">Mode of payment is required</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- UPI Transaction ID -->
+            <!-- IFSC Code -->
             <div class="col-12 col-sm-6 col-md-4 col-lg-4"
-              *ngIf="f['modeOfPayment']?.value === 'UPI' || f['modeOfPayment']?.value === 'BANK_TRANSFER'">
+              *ngIf="f['modeOfPayment']?.value === 'BANK_TRANSFER' || f['modeOfPayment']?.value === 'CHEQUE'">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" formControlName="transactionId"
-                  [class.is-invalid]="isSubmitted && f['transactionId'].invalid">
-                <label for="transactionId">Transaction ID</label>
-                <div *ngIf="isSubmitted && f['transactionId'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['transactionId'].errors?.['required']">Transaction ID is required</span>
+                <input type="text" class="form-control" formControlName="ifscCode"
+                  [class.is-invalid]="isSubmitted && f['ifscCode'].invalid">
+                <label for="ifscCode">IFSC Code</label>
+                <div *ngIf="isSubmitted && f['ifscCode'].invalid" class="invalid-feedback">
+                  Invalid IFSC format. Correct format: AAAA0BBBBBB (4 Captial letters, then 0, then 6 letters/numbers)
                 </div>
               </div>
             </div>
@@ -1367,7 +1400,7 @@
                   [class.is-invalid]="isSubmitted && f['checkNo'].invalid">
                 <label for="checkNo">Cheque No</label>
                 <div *ngIf="isSubmitted && f['checkNo'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['checkNo'].errors?.['required']">Cheque number is required</span>
+                  Cheque number is required
                 </div>
               </div>
             </div>
@@ -1375,46 +1408,65 @@
             <!-- Cheque Date -->
             <div class="col-12 col-sm-6 col-md-4 col-lg-4" *ngIf="f['modeOfPayment']?.value === 'CHEQUE'">
               <div class="form-floating mb-3">
-                <input type="date" class="form-control" formControlName="checkDate" appDisableFutureDates
+                <input type="date" class="form-control" formControlName="checkDate"
                   [class.is-invalid]="isSubmitted && f['checkDate'].invalid">
                 <label for="checkDate">Cheque Date</label>
                 <div *ngIf="isSubmitted && f['checkDate'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['checkDate'].errors?.['required']">Cheque date is required</span>
+                  Cheque date is required
                 </div>
               </div>
             </div>
 
-            <!-- IFSC Code -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4" *ngIf="f['modeOfPayment']?.value === 'BANK_TRANSFER'">
+            <!-- Purpose -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" formControlName="ifscCode"
-                  [class.is-invalid]="isSubmitted && f['ifscCode'].invalid">
-                <label for="ifscCode">IFSC Code</label>
-                <div *ngIf="isSubmitted && f['ifscCode'].invalid" class="invalid-feedback">
-                  <span *ngIf="f['ifscCode'].errors?.['required']">IFSC code is required</span>
-                  <span *ngIf="f['ifscCode'].errors?.['pattern']">Invalid IFSC format. Correct format: AAAA0BBBBBB (4
-                    Captial letters, then 0, then 6 letters/numbers)</span>
+                <input type="text" class="form-control" formControlName="purpose"
+                  [class.is-invalid]="isSubmitted && f['purpose'].invalid">
+                <label for="purpose">Purpose</label>
+                <div *ngIf="isSubmitted && f['purpose'].invalid" class="invalid-feedback">
+                  Purpose is required
                 </div>
+              </div>
+            </div>
+
+            <!-- Details of Achievement (physical-report budgets only) -->
+            <div class="col-12" *ngIf="isPhysicalReportBudget">
+              <div class="form-floating mb-3">
+                <textarea class="form-control" id="achievementDetails" formControlName="achievementDetails"
+                  style="height: 110px;"
+                  [class.is-invalid]="isSubmitted && f['achievementDetails'].invalid"></textarea>
+                <label for="achievementDetails">Details of Achievement</label>
+                <div *ngIf="isSubmitted && f['achievementDetails'].invalid" class="invalid-feedback">
+                  Details of achievement is required
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload Supporting Document (physical-report budgets only, optional) -->
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6" *ngIf="isPhysicalReportBudget">
+              <div class="form-floating mb-3 position-relative">
+                <input type="file" id="supportingDocModalNimsme" class="form-control" [disabled]="uploadedSupportingDoc"
+                  (change)="onSupportingDocSelected($event)">
+                <label for="supportingDocModalNimsme">Upload Supporting Document</label>
+                <button *ngIf="uploadedSupportingDoc" type="button" (click)="removeSupportingDoc()"
+                  class="btn btn-sm btn-link text-danger p-0 position-absolute"
+                  style="top: 8px; right: 10px; z-index: 5;" title="Clear file">
+                  <span class="bi bi-trash"></span>
+                </button>
               </div>
             </div>
 
             <!-- Upload Bill -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-4">
-              <div class="form-floating mb-3">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4" [ngClass]="{'col-md-6 col-lg-6': isPhysicalReportBudget}">
+              <div class="form-floating mb-3 position-relative">
                 <input type="file" id="files" class="form-control" [disabled]="uploadedFilesFinance"
                   (change)="onFileSelected($event)">
                 <label for="uploadBill" for="files">Upload Bill Invoice</label>
-              </div>
-
-              <div *ngIf=" uploadedFilesFinance " class="mt-2">
-                <div class="d-flex align-items-center mb-1">
-                  <span
-                    class="me-2">{{  this.uploadedFilesFinance.name?uploadedFilesFinance.name:uploadedFilesFinance.split('/').pop() }}</span>
-                  <!-- -->
-                  <button type="button" (click)="removeFile()" class="btn btn-sm btn-lime-green">
-                    <span class="bi bi-trash"></span>
-                  </button>
-                </div>
+                <button *ngIf="uploadedFilesFinance" type="button" (click)="removeFile()"
+                  class="btn btn-sm btn-link text-danger p-0 position-absolute"
+                  style="top: 8px; right: 10px; z-index: 5;" title="Clear file">
+                  <span class="bi bi-trash"></span>
+                </button>
               </div>
             </div>
           </div>

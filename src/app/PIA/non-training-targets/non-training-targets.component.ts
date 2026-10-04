@@ -54,6 +54,11 @@ export class NonTrainingTargetsComponent implements OnInit {
   get isRich6B(): boolean {
     return this.loginsessionDetails?.agencyName === 'RICH_6B';
   }
+  get isPhysicalReportBudget(): boolean {
+    const s = String(this.selectedBudgetHead);
+    return s === '71' || s === '68'
+        || s === '157' || s === '158' || s === '151' || s === '152' || s === '153' || s === '156';
+  }
   richMilestonesList: any[] = [];
   selectedRichMilestone: any = null;
   getRichMilestonesList() {
@@ -74,10 +79,13 @@ export class NonTrainingTargetsComponent implements OnInit {
     }
   }
   private buildFinancialDto(): any {
-    const { richMilestoneId, ...rest } = this.financialForm.value;
+    const { richMilestoneId, achievementDetails, ...rest } = this.financialForm.value;
     const dto: any = { ...rest };
     if (richMilestoneId) {
       dto.richMilestoneIds = [Number(richMilestoneId)];
+    }
+    if (this.isPhysicalReportBudget) {
+      dto.achievementDetails = achievementDetails || '';
     }
     return dto;
   }
@@ -98,6 +106,7 @@ export class NonTrainingTargetsComponent implements OnInit {
       return !!this.selectedRichMilestone;
     }
     if (name === 'RICH_6B') {
+      if (this.isPhysicalReportBudget) return true;
       const current = (this.selectedSubActivityName || '').trim();
       return this.rich6BAllowedSubActivities.some(allowed => allowed.trim() === current);
     }
@@ -149,7 +158,8 @@ export class NonTrainingTargetsComponent implements OnInit {
        this.selectedBudgetHead=this._commonService.getOption('subActivityId')?.split('-')[1]
        this._commonService.setOption('subActivityId',null)
     }
-   
+    this.applyRawMaterialValidators();
+
     if(this.selectedBudgetHead!='70'){
         if(this.selectedBudgetHead=='134'){
           this.typeOfHand='formalisationcompliance'
@@ -232,14 +242,13 @@ export class NonTrainingTargetsComponent implements OnInit {
         });
       }
       getPreliminaryDataById(){
-        https://metaverseedu.in/workflow/non-training/all/expenditures?nonTrainingActivityId=1
          this._commonService.getDataByUrl(APIS.nontrainingtargets.getNonTrainingtargetsAleapPriliminaryById+this.selectedBudgetHead).subscribe((res: any) => {
             this.getPreliminaryData=res.data;
             this.financialTargetAchievement=0
             this.getPreliminaryData?.map((item:any)=>{
               this.financialTargetAchievement+=Number(item?.expenditureAmount)
             })
-        
+
         }, (error) => {
           // this.toastrService.error(error.message);
         });
@@ -325,8 +334,19 @@ export class NonTrainingTargetsComponent implements OnInit {
       uploadBillUrl: [''],
       checkNo: [''],
       checkDate: [''],
-      richMilestoneId: [null]
+      richMilestoneId: [null],
+      achievementDetails: [''],
     });
+  }
+  private applyRawMaterialValidators() {
+    const ctrl = this.financialForm?.get('achievementDetails');
+    if (!ctrl) return;
+    if (this.isPhysicalReportBudget) {
+      ctrl.setValidators([Validators.required]);
+    } else {
+      ctrl.clearValidators();
+    }
+    ctrl.updateValueAndValidity();
   }
 
   // addd by upendranath reddy for common file preview
@@ -334,6 +354,39 @@ export class NonTrainingTargetsComponent implements OnInit {
 
     this._commonService.openFile(filePath);
 
+  }
+  downloadSupportDocument(filePath: string): void {
+    if (!filePath) return;
+    const trimmed = filePath.split('public_html/')[1];
+    if (!trimmed) return;
+    const encoded = trimmed.split('/').map(seg => encodeURIComponent(seg)).join('/');
+    const fullUrl = `https://metaverseedu.in/${encoded}`;
+    const fileName = trimmed.split('/').pop() || 'supporting-document';
+    fetch(fullUrl)
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.blob();
+      })
+      .then(blob => {
+        const objectUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => window.URL.revokeObjectURL(objectUrl), 1000);
+      })
+      .catch(() => {
+        const link = document.createElement('a');
+        link.href = fullUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.toastrService.warning('Direct download blocked. File opened in a new tab — right-click and Save.');
+      });
   }
 
    modeOfPaymentTravel(val:any){
@@ -520,6 +573,9 @@ getPreliminaryData:any=[]
               else{
                 this.financialForm.patchValue({uploadBillUrl:this.uploadedFilesFinance})
               }
+              if (this.uploadedSupportingDoc) {
+                formData.append("supportDocument", this.uploadedSupportingDoc);
+              }
 
               formData.append("dto", JSON.stringify({...this.buildFinancialDto(),nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
   
@@ -557,10 +613,13 @@ getPreliminaryData:any=[]
          this.f['nonTrainingActivityId'].setValue(Number(this.selectedActivity));
           const formData = new FormData();
            formData.append("dto", JSON.stringify(this.buildFinancialDto()));
- 
+
            if (this.uploadedFilesFinance) {
              formData.append("file", this.uploadedFilesFinance);
              }
+           if (this.uploadedSupportingDoc) {
+             formData.append("supportDocument", this.uploadedSupportingDoc);
+           }
          this._commonService.add(APIS.nontrainingtargets.saveNonTrainingtargetsCodeIT,formData).subscribe((res: any) => {
            this.toastrService.success('Data saved successfully','Non Training Progress Data Success!');
            this.getPreliminaryData.push(res.data)
@@ -644,8 +703,18 @@ getPreliminaryData:any=[]
     }
   }
 removeFile(): void {
-     this.uploadedFilesFinance=null   
+     this.uploadedFilesFinance=null
    }
+  uploadedSupportingDoc: any;
+  onSupportingDocSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.uploadedSupportingDoc = file;
+    }
+  }
+  removeSupportingDoc(): void {
+    this.uploadedSupportingDoc = null;
+  }
    removeFilePayment(): void {
     this.uploadedFilesPayment = null;
     const fileInput = document.getElementById('paymentFile') as HTMLInputElement;

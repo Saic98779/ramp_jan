@@ -18,23 +18,23 @@
           <ng-container *ap
           pHasRole="[Role.AGENCY_MANAGER, Role.AGENCY_EXECUTOR]">
              <a class="navbar-brand me-2" href="#"  *ngIf="this.user?.agencyName=='ALEAP'">
-            <img src="../RAMP1/assets/img/aleapLogo.jpeg" alt="Aleap Logo" class="img-fluid" style="height: 47px; width: 100px;">
+            <img src="assets/img/aleapLogo.jpeg" alt="Aleap Logo" class="img-fluid" style="height: 47px; width: 100px;">
           </a>
           </ng-container>
          <ng-container *appHasRole="[Role.AGENCY_MANAGER, Role.AGENCY_EXECUTOR,Role.CALL_CENTER,Role.Admin,Role.SPIU]">
           
           <a class="navbar-brand" href="#"   *ngIf="this.user?.agencyName!='ALEAP'">
-            <img src="../RAMP1/assets/img/logo.png" alt="Logo" class="img-fluid" style="height: 45px; width: 45px;">
+            <img src="assets/img/logo.png" alt="Logo" class="img-fluid" style="height: 45px; width: 45px;">
           </a>
            <a class="navbar-brand me-2" href="#"   *ngIf="this.user?.agencyName!='ALEAP'">
-            <img src="../RAMP1/assets/img/ramp_lion.png" alt="Ramp lion Logo" class="img-fluid" style="height: 40px; width: 30px;">
+            <img src="assets/img/ramp_lion.png" alt="Ramp lion Logo" class="img-fluid" style="height: 40px; width: 30px;">
           </a>
            <a class="navbar-brand me-2" href="#"   *ngIf="this.user?.agencyName!='ALEAP'">
-            <img src="../RAMP1/assets/img/ramp-logo.png" alt="Ramp Logo" class="img-fluid" style="height: 45px; width: 36px;">
+            <img src="assets/img/ramp-logo.png" alt="Ramp Logo" class="img-fluid" style="height: 45px; width: 36px;">
           </a>
          
          </ng-container>
-          <img src="../RAMP1/assets/img/GT Logo.png" alt="GT Logo" class="footer-logo" />
+          <img src="assets/img/GT Logo.png" alt="GT Logo" class="footer-logo" />
          
         </div>
         <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasNavbar2"
@@ -294,7 +294,7 @@
               <!-- new tab code starts here This is to handle the submenu toggle functionality  || 27th july 2025 -->
               <li class="nav-item dropdown" style="position: relative;" (mouseenter)="openMainDropdown()" (mouseleave)="closeMainDropdown()">
                 <a class="nav-link" href="#"  style="cursor:pointer;" data-bs-toggle="dropdown"  >
-                  <img src="../RAMP1/assets/img/9-dots.png" style="width: 30px;" alt="menu" />
+                  <img src="assets/img/9-dots.png" style="width: 30px;" alt="menu" />
                 </a>
                 <ul class="dropdown-menu shadow"  [class.show]="isMainDropdownOpen"
                   style="min-width:220px; max-width:260px; box-shadow:0 4px 16px rgba(0,0,0,0.13); padding: 8px 0; border-radius: 8px; right:-100%; top:100%;">

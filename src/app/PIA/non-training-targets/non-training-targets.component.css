@@ -1,5 +1,5 @@
 .table-scroll-container {
-  max-height: 250px; /* You can adjust this height */
+  max-height: 480px; /* Increased to use available vertical space below the table */
   overflow-y: auto;
   position: relative;
 }
@@ -153,4 +153,37 @@ td.text-center {
   .dashboard-value {
     font-size: 1.125rem;
   }
-} */
+}
+
+/* Custom light-themed tooltip for long-text table cells */
+.cell-tooltip-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+.cell-tooltip-wrap .cell-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  white-space: normal;
+  width: max-content;
+  max-width: 360px;
+  z-index: 1000;
+  pointer-events: none;
+  transition: opacity 120ms ease-in-out;
+}
+.cell-tooltip-wrap:hover .cell-tooltip,
+.cell-tooltip-wrap:focus-within .cell-tooltip {
+  visibility: visible;
+  opacity: 1;
+}

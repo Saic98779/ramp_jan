@@ -157,11 +157,75 @@ deleteTechnologyAdoptionID: any;
   financialTargetAchievement: any = 0;
   onBudgetHeadChange(event: any) {
     this.selectedBudgetHead = event;
+    this.applyPhysicalReportValidators();
     this.getDeatilOfTargets()
+  }
+  get isPhysicalReportBudget(): boolean {
+    const s = String(this.selectedBudgetHead);
+    return s === '61' || s === '29' || s === '30' || s === '31' || s === '36'
+        || s === '55' || s === '56' || s === '57' || s === '58' || s === '59'
+        || s === '64';
+  }
+  uploadedSupportingDoc: any;
+  onSupportingDocSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) this.uploadedSupportingDoc = file;
+  }
+  removeSupportingDoc(): void {
+    this.uploadedSupportingDoc = null;
+  }
+  private applyPhysicalReportValidators() {
+    const ctrl = this.financialForm?.get('achievementDetails');
+    if (!ctrl) return;
+    if (this.isPhysicalReportBudget) {
+      ctrl.setValidators([Validators.required]);
+    } else {
+      ctrl.clearValidators();
+    }
+    ctrl.updateValueAndValidity();
+  }
+  private buildFinancialDto(): any {
+    const { achievementDetails, ...rest } = this.financialForm.value;
+    const dto: any = { ...rest };
+    if (this.isPhysicalReportBudget) {
+      dto.achievementDetails = achievementDetails || '';
+    }
+    return dto;
+  }
+  downloadSupportDocument(filePath: string): void {
+    if (!filePath) return;
+    const trimmed = filePath.split('public_html/')[1];
+    if (!trimmed) return;
+    const encoded = trimmed.split('/').map(seg => encodeURIComponent(seg)).join('/');
+    const fullUrl = `https://metaverseedu.in/${encoded}`;
+    const fileName = trimmed.split('/').pop() || 'supporting-document';
+    fetch(fullUrl)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); })
+      .then(blob => {
+        const objectUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => window.URL.revokeObjectURL(objectUrl), 1000);
+      })
+      .catch(() => {
+        const link = document.createElement('a');
+        link.href = fullUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.toastrService.warning('Direct download blocked. File opened in a new tab — right-click and Save.');
+      });
   }
  TargetDetails: any;
     getDeatilOfTargets() {
         this.TargetDetails=[]
+        this.getPreliminaryData = [];
         this._commonService.getDataByUrl(APIS.nontrainingtargets.getNonTrainingtargets+this.selectedBudgetHead).subscribe((res: any) => {
           this.TargetDetails = res.data;
           this.physicalTarget = this.TargetDetails?.physicalTarget || 0;
@@ -175,10 +239,13 @@ deleteTechnologyAdoptionID: any;
              this.selectedBudgetHead == '65' ||
             this.selectedBudgetHead == '63' ||
             this.selectedBudgetHead == '29' ||
+            this.selectedBudgetHead == '30' || this.selectedBudgetHead == '31' || this.selectedBudgetHead == '36' ||
             this.selectedBudgetHead == '37' ||
             this.selectedBudgetHead == '38' ||
             this.selectedBudgetHead == '39' ||
-            this.selectedBudgetHead == '40'
+            this.selectedBudgetHead == '40' ||
+            this.selectedBudgetHead == '55' || this.selectedBudgetHead == '56' || this.selectedBudgetHead == '57' ||
+            this.selectedBudgetHead == '58' || this.selectedBudgetHead == '59' || this.selectedBudgetHead == '61'
             ) {
               if(this.selectedBudgetHead == '60'){
                 this.getTechnologyAdoptionData();
@@ -211,7 +278,11 @@ deleteTechnologyAdoptionID: any;
 
           
         }, (error) => {
-           if(this.selectedBudgetHead=='1' || this.selectedBudgetHead=='11'){
+           if(this.selectedBudgetHead=='1' || this.selectedBudgetHead=='11' ||
+              this.selectedBudgetHead=='29' || this.selectedBudgetHead=='30' || this.selectedBudgetHead=='31' ||
+              this.selectedBudgetHead=='36' || this.selectedBudgetHead=='55' || this.selectedBudgetHead=='56' ||
+              this.selectedBudgetHead=='57' || this.selectedBudgetHead=='58' || this.selectedBudgetHead=='59' ||
+              this.selectedBudgetHead=='61' || this.selectedBudgetHead=='64'){
             this.getPreliminaryDataById()
 
           }
@@ -374,7 +445,8 @@ createForm(): FormGroup {
       purpose: ['', Validators.required],
       uploadBillUrl: [''],
       checkNo: [''],
-      checkDate: ['']
+      checkDate: [''],
+      achievementDetails: [''],
     });
   }
 
@@ -565,7 +637,10 @@ createForm(): FormGroup {
                 this.financialForm.patchValue({uploadBillUrl:this.uploadedFilesFinance})
               }
 
-              formData.append("dto", JSON.stringify({...this.financialForm.value,nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
+              if (this.uploadedSupportingDoc) {
+                formData.append("supportDocument", this.uploadedSupportingDoc);
+              }
+              formData.append("dto", JSON.stringify({...this.buildFinancialDto(),nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
 
          
         this._commonService.update(APIS.nontrainingtargets.updateNonTrainingtargetsAleapPriliminary,formData,this.preliminaryID).subscribe((res: any) => {
@@ -593,11 +668,14 @@ createForm(): FormGroup {
         this.f['nonTrainingSubActivityId'].setValue(Number(this.selectedBudgetHead));
         this.f['nonTrainingActivityId'].setValue(Number(this.selectedActivity));
          const formData = new FormData();
-          formData.append("dto", JSON.stringify({...this.financialForm.value}));
+          formData.append("dto", JSON.stringify(this.buildFinancialDto()));
 
            if (this.uploadedFilesFinance) {
              formData.append("file", this.uploadedFilesFinance);
              }
+          if (this.uploadedSupportingDoc) {
+            formData.append("supportDocument", this.uploadedSupportingDoc);
+          }
         this._commonService.add(APIS.nontrainingtargets.saveNonTrainingtargetsCodeIT,formData).subscribe((res: any) => {
           this.toastrService.success('Data saved successfully','Non Training Progress Data Success!');
           this.getPreliminaryData.push(res.data)

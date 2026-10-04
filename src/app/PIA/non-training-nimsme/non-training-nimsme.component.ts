@@ -91,6 +91,7 @@ designations = [
   onBudgetHeadChange(event: any) {
     this.selectedBudgetHead = event;
     console.log('Selected Budget Head:', this.selectedBudgetHead);
+    this.applyPhysicalReportValidators();
     if( this.selectedBudgetHead=='82'){
       this.designations=[{value :'EDC Manager' ,label :'EDC Manager'}]
     }
@@ -113,6 +114,7 @@ designations = [
  TargetDetails: any;
     getDeatilOfTargets() {
         this.TargetDetails=[]
+        this.getPreliminaryData = [];
         this._commonService.getDataByUrl(APIS.nontrainingtargets.getNonTrainingtargets+this.selectedBudgetHead).subscribe((res: any) => {
           this.TargetDetails = res.data;
           this.physicalTarget = this.TargetDetails?.physicalTarget || 0;
@@ -123,7 +125,7 @@ designations = [
             if (
             this.selectedBudgetHead == '77' ||
             this.selectedBudgetHead == '78' ||
-            this.selectedBudgetHead == '79'  || this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' || this.selectedBudgetHead=='144' ||
+            this.selectedBudgetHead == '79'  || this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' || this.selectedBudgetHead=='144' || this.selectedBudgetHead=='83' ||
             
             this.selectedBudgetHead == '80' ||
             this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' ||
@@ -158,7 +160,7 @@ designations = [
             this.selectedBudgetHead == '78' ||
             this.selectedBudgetHead == '79' ||
             this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' || this.selectedBudgetHead=='144' ||
-            this.selectedBudgetHead == '80' ||
+            this.selectedBudgetHead == '80' || this.selectedBudgetHead == '83' ||
             this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' ||
             this.selectedBudgetHead == '81'
             ) {
@@ -238,8 +240,69 @@ createForm(): FormGroup {
        DummyuploadBillUrl: [''],
        category:[''],
        checkNo: [''],
-      checkDate: ['']
+      checkDate: [''],
+      achievementDetails: [''],
     });
+  }
+  get isPhysicalReportBudget(): boolean {
+    const s = String(this.selectedBudgetHead);
+    return s === '83' || s === '144';
+  }
+  uploadedSupportingDoc: any;
+  onSupportingDocSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) this.uploadedSupportingDoc = file;
+  }
+  removeSupportingDoc(): void {
+    this.uploadedSupportingDoc = null;
+  }
+  private applyPhysicalReportValidators() {
+    const ctrl = this.financialForm?.get('achievementDetails');
+    if (!ctrl) return;
+    if (this.isPhysicalReportBudget) {
+      ctrl.setValidators([Validators.required]);
+    } else {
+      ctrl.clearValidators();
+    }
+    ctrl.updateValueAndValidity();
+  }
+  private buildFinancialDto(): any {
+    const { achievementDetails, ...rest } = this.financialForm.value;
+    const dto: any = { ...rest };
+    if (this.isPhysicalReportBudget) {
+      dto.achievementDetails = achievementDetails || '';
+    }
+    return dto;
+  }
+  downloadSupportDocument(filePath: string): void {
+    if (!filePath) return;
+    const trimmed = filePath.split('public_html/')[1];
+    if (!trimmed) return;
+    const encoded = trimmed.split('/').map(seg => encodeURIComponent(seg)).join('/');
+    const fullUrl = `https://metaverseedu.in/${encoded}`;
+    const fileName = trimmed.split('/').pop() || 'supporting-document';
+    fetch(fullUrl)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); })
+      .then(blob => {
+        const objectUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => window.URL.revokeObjectURL(objectUrl), 1000);
+      })
+      .catch(() => {
+        const link = document.createElement('a');
+        link.href = fullUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.toastrService.warning('Direct download blocked. File opened in a new tab — right-click and Save.');
+      });
   }
 
   get f() {
@@ -292,69 +355,35 @@ createForm(): FormGroup {
   }
 
   modeOfPaymentIt(val:any){
+      const clearOne = (name: string) => {
+        this.financialForm.get(name)?.clearValidators();
+        this.financialForm.get(name)?.patchValue('');
+        this.financialForm.get(name)?.updateValueAndValidity();
+      };
+      const requireOne = (name: string, extra: any[] = []) => {
+        this.financialForm.get(name)?.setValidators([Validators.required, ...extra]);
+        this.financialForm.get(name)?.updateValueAndValidity();
+      };
       if(val=='CASH'){
-        this.financialForm.patchValue({
-          ifscCode: '',
-          transactionId: '',
-          checkNo: '',
-          checkDate: ''
-        });
-        this.financialForm.get('ifscCode')?.clearValidators();
-        this.financialForm.get('transactionId')?.clearValidators();
-        this.financialForm.get('checkNo')?.clearValidators();
-        this.financialForm.get('checkDate')?.clearValidators();
-        
-        this.financialForm.get('ifscCode')?.updateValueAndValidity();
-        this.financialForm.get('transactionId')?.updateValueAndValidity();
-        this.financialForm.get('checkNo')?.updateValueAndValidity();
-        this.financialForm.get('checkDate')?.updateValueAndValidity();
+        ['accountNumber','bankName','ifscCode','transactionId','checkNo','checkDate'].forEach(clearOne);
       }
       else if(val=='BANK_TRANSFER'){
-        this.financialForm.patchValue({
-          transactionId: '',
-          checkNo: '',
-          checkDate: ''
-        });
-        this.financialForm.get('ifscCode')?.setValidators([Validators.required, Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)]);
-        this.financialForm.get('transactionId')?.setValidators([Validators.required]);
-        this.financialForm.get('checkNo')?.clearValidators();
-        this.financialForm.get('checkDate')?.clearValidators();
-        
-        this.financialForm.get('ifscCode')?.updateValueAndValidity();
-        this.financialForm.get('transactionId')?.updateValueAndValidity();
-        this.financialForm.get('checkNo')?.updateValueAndValidity();
-        this.financialForm.get('checkDate')?.updateValueAndValidity();
+        ['checkNo','checkDate','transactionId'].forEach(clearOne);
+        requireOne('accountNumber');
+        requireOne('bankName');
+        requireOne('ifscCode', [Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)]);
       }
       else if(val=='UPI'){
-        this.financialForm.patchValue({
-          ifscCode: '',
-          checkNo: '',
-          checkDate: ''
-        });
-        this.financialForm.get('ifscCode')?.clearValidators();
-        this.financialForm.get('transactionId')?.setValidators([Validators.required]);
-        this.financialForm.get('checkNo')?.clearValidators();
-        this.financialForm.get('checkDate')?.clearValidators();
-        
-        this.financialForm.get('ifscCode')?.updateValueAndValidity();
-        this.financialForm.get('transactionId')?.updateValueAndValidity();
-        this.financialForm.get('checkNo')?.updateValueAndValidity();
-        this.financialForm.get('checkDate')?.updateValueAndValidity();
+        ['accountNumber','bankName','ifscCode','checkNo','checkDate'].forEach(clearOne);
+        requireOne('transactionId');
       }
-       else if(val=='CHEQUE'){
-        this.financialForm.patchValue({
-          ifscCode: '',
-          transactionId: ''
-        });
-        this.financialForm.get('ifscCode')?.clearValidators();
-        this.financialForm.get('transactionId')?.clearValidators();
-        this.financialForm.get('checkNo')?.setValidators([Validators.required]);
-        this.financialForm.get('checkDate')?.setValidators([Validators.required]);
-        
-        this.financialForm.get('ifscCode')?.updateValueAndValidity();
-        this.financialForm.get('transactionId')?.updateValueAndValidity();
-        this.financialForm.get('checkNo')?.updateValueAndValidity();
-        this.financialForm.get('checkDate')?.updateValueAndValidity();
+      else if(val=='CHEQUE'){
+        ['transactionId'].forEach(clearOne);
+        requireOne('accountNumber');
+        requireOne('bankName');
+        requireOne('ifscCode', [Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)]);
+        requireOne('checkNo');
+        requireOne('checkDate');
       }
     }
 
@@ -377,7 +406,10 @@ createForm(): FormGroup {
                 this.financialForm.patchValue({uploadBillUrl:this.uploadedFilesFinance})
               }
 
-              formData.append("dto", JSON.stringify({...this.financialForm.value,nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
+              if (this.uploadedSupportingDoc) {
+                formData.append("supportDocument", this.uploadedSupportingDoc);
+              }
+              formData.append("dto", JSON.stringify({...this.buildFinancialDto(),nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
 
          
         this._commonService.update(APIS.nontrainingtargets.updateNonTrainingtargetsAleapPriliminary,formData,this.preliminaryID).subscribe((res: any) => {
@@ -408,11 +440,14 @@ createForm(): FormGroup {
   +        this.f['nonTrainingActivityId'].setValue(Number(this.selectedActivity));
             this.financialForm.removeControl('DummyuploadBillUrl');
            const formData = new FormData();
-            formData.append("dto", JSON.stringify({...this.financialForm.value}));
-  
+            formData.append("dto", JSON.stringify(this.buildFinancialDto()));
+
             if (this.uploadedFilesFinance) {
              formData.append("file", this.uploadedFilesFinance);
              }
+            if (this.uploadedSupportingDoc) {
+              formData.append("supportDocument", this.uploadedSupportingDoc);
+            }
           this._commonService.add(APIS.nontrainingtargets.saveNonTrainingtargetsCodeIT,formData).subscribe((res: any) => {
             this.toastrService.success('Data saved successfully','Non Training Progress Data Success!');
 
