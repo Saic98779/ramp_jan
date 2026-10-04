@@ -827,7 +827,7 @@
                 <div *ngIf="isSubmitted && f['expenditureAmount'].invalid" class="invalid-feedback">
                   <span *ngIf="f['expenditureAmount'].errors?.['required']">Expenditure amount is required</span>
                   <span *ngIf="f['expenditureAmount'].errors?.['min']">Amount must be greater than 0</span>
-                   <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed ₹50,00,000</span>
+                  <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed ₹{{ f['expenditureAmount'].errors?.['max']?.max | number:'1.0-0' }}</span>
                 </div>
               </div>
             </div>

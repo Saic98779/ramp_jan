@@ -520,7 +520,7 @@ createForm(): FormGroup {
         this.financialForm.get('accountNumber')?.updateValueAndValidity();
         this.financialForm.get('transactionId')?.updateValueAndValidity();
         this.financialForm.get('ifscCode')?.updateValueAndValidity();
-        this.financialForm.get('expenditureAmount')?.setValidators([Validators.required, Validators.min(0), Validators.max(5000)]);
+        this.financialForm.get('expenditureAmount')?.setValidators([Validators.required, Validators.min(0), Validators.max(this.isPhysicalReportBudget ? 5000000 : 5000)]);
         this.financialForm.get('expenditureAmount')?.updateValueAndValidity();
         this.financialForm.get('checkNo')?.clearValidators();
         this.financialForm.get('checkDate')?.clearValidators();
