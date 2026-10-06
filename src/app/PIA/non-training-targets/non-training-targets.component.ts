@@ -57,7 +57,7 @@ export class NonTrainingTargetsComponent implements OnInit {
   get isPhysicalReportBudget(): boolean {
     const s = String(this.selectedBudgetHead);
     return s === '71' || s === '68'
-        || s === '157' || s === '158' || s === '151' || s === '152' || s === '153' || s === '156';
+        || s === '157' || s === '158' || s === '151' || s === '152' || s === '153' || s === '156' || s === '162';
   }
   richMilestonesList: any[] = [];
   selectedRichMilestone: any = null;
@@ -114,7 +114,12 @@ export class NonTrainingTargetsComponent implements OnInit {
   }
   get showMilestoneSelector(): boolean {
     const name = this.loginsessionDetails?.agencyName;
-    if (name === 'RICH_6B') return true;
+    if (name === 'RICH_6B') {
+      // On the physical-report sub-activities (157, 158, 151, 152, 153, 156) we only
+      // want the plain expenditure flow — no milestone dropdown.
+      if (this.isPhysicalReportBudget) return false;
+      return true;
+    }
     if (name === 'RICH_6A') {
       return (this.selectedSubActivityName || '').trim() !== 'Submission of Inception Report';
     }
@@ -536,20 +541,21 @@ openModel(mode: string, item?: any): void {
       this.iseditMode = true;
       this.modeOfPaymentIt(item?.modeOfPayment);
       this.uploadedFilesFinance=item?.uploadBillUrl
+      this.uploadedSupportingDoc = item?.supportDocumentUrl || null;
 
     // Create a copy of the form values WITHOUT the file input
     const formValues = {...item};
-    
+
     // Convert dates to ISO format for the date inputs
     if (formValues.paymentDate) formValues.paymentDate = this.convertToISOFormat(formValues.paymentDate);
     if (formValues.billDate) formValues.billDate = this.convertToISOFormat(formValues.billDate);
-    
+
     // Remove the file property to avoid the error
     delete formValues.uploadBillUrl;
-    
+
     // Set form values without the file
     this.financialForm.patchValue(formValues);
-    
+
     // Store the filename separately
     this.existingFileName = item?.uploadBillUrl || '';
   }
@@ -567,13 +573,13 @@ getPreliminaryData:any=[]
          this.f['nonTrainingSubActivityId'].setValue(Number(this.selectedBudgetHead));
          this.f['nonTrainingActivityId'].setValue(Number(this.selectedActivity));
             const formData = new FormData();
-             if (this.uploadedFilesFinance.name && typeof this.uploadedFilesFinance !== 'string') {
+             if (this.uploadedFilesFinance && this.uploadedFilesFinance.name && typeof this.uploadedFilesFinance !== 'string') {
               formData.append("files", this.uploadedFilesFinance);
               }
               else{
                 this.financialForm.patchValue({uploadBillUrl:this.uploadedFilesFinance})
               }
-              if (this.uploadedSupportingDoc) {
+              if (this.uploadedSupportingDoc && this.uploadedSupportingDoc.name && typeof this.uploadedSupportingDoc !== 'string') {
                 formData.append("supportDocument", this.uploadedSupportingDoc);
               }
 

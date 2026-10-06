@@ -1272,9 +1272,9 @@
                    <thead class="bg-lime-green">
                      <tr>
                        <th>S.No</th>
-                       <th *ngIf="isRestrictedAgency">Payment Iteration</th>
-                       <th *ngIf="isRestrictedAgency">{{ isRich6A ? 'Milestone Details' : 'Milestone' }}</th>
-                       <th *ngIf="isRestrictedAgency">Milestone Amount</th>
+                       <th *ngIf="isRestrictedAgency && !isPhysicalReportBudget">Payment Iteration</th>
+                       <th *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ isRich6A ? 'Milestone Details' : 'Milestone' }}</th>
+                       <th *ngIf="isRestrictedAgency && !isPhysicalReportBudget">Milestone Amount</th>
                        <th>Report Submission Date</th>
                        <!-- <th> Vendor Company Name</th> -->
                        <!-- <th>Date of Approval</th> -->
@@ -1297,9 +1297,9 @@
                      </tr>
                      <tr *ngFor="let preliminary of getPreliminaryData; let i = index">
                        <td>{{ i + 1 }}</td>
-                       <td *ngIf="isRestrictedAgency">{{ (preliminary?.milestones && preliminary.milestones[0]) ? preliminary.milestones[0].paymentIteration : '' }}</td>
-                       <td *ngIf="isRestrictedAgency">{{ (preliminary?.milestones && preliminary.milestones[0]) ? preliminary.milestones[0].paymentMilestone : '' }}</td>
-                       <td *ngIf="isRestrictedAgency">{{ (preliminary?.milestones && preliminary.milestones[0]) ? (preliminary.milestones[0].amount | commaSeperationIndia) : '' }}</td>
+                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ (preliminary?.milestones && preliminary.milestones[0]) ? preliminary.milestones[0].paymentIteration : '' }}</td>
+                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ (preliminary?.milestones && preliminary.milestones[0]) ? preliminary.milestones[0].paymentMilestone : '' }}</td>
+                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ (preliminary?.milestones && preliminary.milestones[0]) ? (preliminary.milestones[0].amount | commaSeperationIndia) : '' }}</td>
                        <td>{{ preliminary?.paymentDate  }}</td>
                        <!-- <td *>{{preliminary?.category}}</td> -->
                        <!-- <td>{{ preliminary.billDate | date: 'dd-MM-yyyy' }}</td> -->
@@ -1569,7 +1569,7 @@
    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
      <div class="modal-content">
        <div class="modal-header py-2">
-         <h6 class="modal-title" id="addSurveyLabel">{{iseditMode?'Update' :'Add'}} {{isRestrictedAgency ? 'Milestone' : 'Expenditure'}}</h6>
+         <h6 class="modal-title" id="addSurveyLabel">{{iseditMode?'Update' :'Add'}} {{(isRestrictedAgency && !isPhysicalReportBudget) ? 'Milestone' : 'Expenditure'}}</h6>
          <button type="button" class="btn-close me-1" data-bs-dismiss="modal" aria-label="Close"
            (click)="resetForm()"></button>
        </div>

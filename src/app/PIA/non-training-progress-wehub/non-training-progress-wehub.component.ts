@@ -468,6 +468,7 @@ createForm(): FormGroup {
       this.iseditMode = true;
       this.modeOfPaymentIt(item?.modeOfPayment);
       this.uploadedFilesFinance=item?.uploadBillUrl
+      this.uploadedSupportingDoc = item?.supportDocumentUrl || null;
       this.financialForm.patchValue({
         agencyId: item?.agencyId || 0,
         nonTrainingSubActivityId: item?.nonTrainingSubActivityId || 0,
@@ -483,6 +484,7 @@ createForm(): FormGroup {
         modeOfPayment: item?.modeOfPayment || '',
         transactionId: item?.transactionId || '',
         purpose: item?.purpose || '',
+        achievementDetails: item?.achievementDetails || '',
         uploadBillUrl: item?.uploadBillUrl || ''
       });
       
@@ -630,14 +632,14 @@ createForm(): FormGroup {
         this.f['nonTrainingSubActivityId'].setValue(Number(this.selectedBudgetHead));
         this.f['nonTrainingActivityId'].setValue(Number(this.selectedActivity));
          const formData = new FormData();
-             if (this.uploadedFilesFinance.name && typeof this.uploadedFilesFinance !== 'string') {
+             if (this.uploadedFilesFinance && this.uploadedFilesFinance.name && typeof this.uploadedFilesFinance !== 'string') {
               formData.append("files", this.uploadedFilesFinance);
               }
               else{
                 this.financialForm.patchValue({uploadBillUrl:this.uploadedFilesFinance})
               }
 
-              if (this.uploadedSupportingDoc) {
+              if (this.uploadedSupportingDoc && this.uploadedSupportingDoc.name && typeof this.uploadedSupportingDoc !== 'string') {
                 formData.append("supportDocument", this.uploadedSupportingDoc);
               }
               formData.append("dto", JSON.stringify({...this.buildFinancialDto(),nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
