@@ -106,7 +106,9 @@ export class NonTrainingTargetsComponent implements OnInit {
       return !!this.selectedRichMilestone;
     }
     if (name === 'RICH_6B') {
-      if (this.isPhysicalReportBudget) return true;
+      // Physical-report sub-activities render via the ALEAP-style card gated on
+      // isPhysicalReportBudget — don't also show the restricted tab card for them.
+      if (this.isPhysicalReportBudget) return false;
       const current = (this.selectedSubActivityName || '').trim();
       return this.rich6BAllowedSubActivities.some(allowed => allowed.trim() === current);
     }
