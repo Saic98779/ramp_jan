@@ -10,44 +10,7 @@
            </div>
          </div>
          <div class="card-body">
-           <div class="row" *ngIf="isRich6A">
-             <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-               <div class="form-floating mb-3 mb-sm-3 mb-md-0">
-                 <select class="form-select" id="topMilestoneSelect"
-                   [ngModel]="selectedRichMilestone?.richMilestoneId || ''"
-                   [ngModelOptions]="{standalone: true}"
-                   (change)="onRichMilestoneChange($any($event.target).value)">
-                   <option value="">Select Milestone</option>
-                   <option *ngFor="let m of richMilestonesList" [value]="m?.richMilestoneId">
-                     {{ m?.paymentIteration }}
-                   </option>
-                 </select>
-                 <label for="topMilestoneSelect">Milestone</label>
-               </div>
-             </div>
-             <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-               <div class="form-floating mb-3 mb-sm-3 mb-md-0">
-                 <input type="text" class="form-control" id="topRmMilestone"
-                   [value]="selectedRichMilestone?.paymentMilestone || ''" disabled readonly>
-                 <label for="topRmMilestone">Payment Milestone</label>
-               </div>
-             </div>
-             <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-               <div class="form-floating mb-3 mb-sm-3 mb-md-0">
-                 <input type="text" class="form-control" id="topRmPercentage"
-                   [value]="selectedRichMilestone?.paymentPercentage != null ? selectedRichMilestone.paymentPercentage + '%' : ''" disabled readonly>
-                 <label for="topRmPercentage">Payment Percentage</label>
-               </div>
-             </div>
-             <div class="col-12 col-sm-6 col-md-3 col-lg-3">
-               <div class="form-floating mb-3 mb-sm-3 mb-md-0">
-                 <input type="text" class="form-control" id="topRmAmount"
-                   [value]="selectedRichMilestone?.amount != null ? (selectedRichMilestone.amount | commaSeperationIndia) : ''" disabled readonly>
-                 <label for="topRmAmount">Amount</label>
-               </div>
-             </div>
-           </div>
-           <div class="row" *ngIf="!isRich6A">
+           <div class="row">
              <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                <div class="form-floating mb-3 mb-sm-3 mb-md-0">
                  <select class="form-select events-expenditure" id="budgethead" [(ngModel)]="selectedActivity"
@@ -109,7 +72,7 @@
        <!-- begin:: Preliminary survey for selection of potential SHGs -->
        <!-- isPhysicalReportBudget || selectedBudgetHead=='68' -->
        <div class="card budgets mb-3 "
-         *ngIf="isRich6B || selectedBudgetHead=='68' || selectedBudgetHead=='69' || isPhysicalReportBudget || selectedBudgetHead=='72' || selectedBudgetHead=='128' || selectedBudgetHead=='70' || this.selectedBudgetHead=='134' || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='137'  || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='139' || this.selectedBudgetHead=='138' || this.selectedBudgetHead=='140' || this.selectedBudgetHead=='141' ">
+         *ngIf="isRich6A || isRich6B || selectedBudgetHead=='68' || selectedBudgetHead=='69' || isPhysicalReportBudget || selectedBudgetHead=='72' || selectedBudgetHead=='128' || selectedBudgetHead=='70' || this.selectedBudgetHead=='134' || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='137'  || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='139' || this.selectedBudgetHead=='138' || this.selectedBudgetHead=='140' || this.selectedBudgetHead=='141' ">
 
          <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
 
@@ -139,7 +102,7 @@
          </div>
          <div class="card-body">
            <!-- || isPhysicalReportBudget || selectedBudgetHead=='68' -->
-           <div class="row" *ngIf="isRestrictedAgency || selectedBudgetHead=='68' || selectedBudgetHead=='69' || isPhysicalReportBudget || selectedBudgetHead=='72' || selectedBudgetHead=='128' || selectedBudgetHead=='70' || this.selectedBudgetHead=='134'  || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='139' || this.selectedBudgetHead=='137' || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='138' || this.selectedBudgetHead=='140' || this.selectedBudgetHead=='141' ">
+           <div class="row" *ngIf="!showMilestoneSelector && (isRestrictedAgency || selectedBudgetHead=='68' || selectedBudgetHead=='69' || isPhysicalReportBudget || selectedBudgetHead=='72' || selectedBudgetHead=='128' || selectedBudgetHead=='70' || this.selectedBudgetHead=='134'  || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='139' || this.selectedBudgetHead=='137' || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='138' || this.selectedBudgetHead=='140' || this.selectedBudgetHead=='141') ">
              <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                <fieldset class="mb-3" style="border: 1px solid #e0e0e0; border-radius: 8px; padding-left: 18px; ">
                  <legend class="text-lime-green" style="padding: 0 8px;">Physical</legend>
@@ -1084,8 +1047,8 @@
                  aria-labelledby="expenditure-tab">
               <div class="p-3">
 
-                 <!-- Payment Details inline form for RICH_6A -->
-                 <div class="card mb-3" *ngIf="isRich6A">
+                 <!-- Payment Details inline form for RICH_6A — disabled; RICH_6A now uses the shared Add Expenditure modal like every other agency. -->
+                 <div class="card mb-3" *ngIf="false">
                    <div class="card-header bg-transparent">
                      <h6 class="fw-600 mb-0">Payment Details</h6>
                    </div>
@@ -1256,9 +1219,9 @@
              <div class="card-header bg-transparent">
                <div class="row align-items-center">
                  <div class="col-8 col-sm-8 col-md-9 col-lg-10">
-                   <h6 class="fw-600 mb-2 mb-sm-3 mb-md-0">{{ isRich6A ? 'Previous Payments' : 'Expenditure' }}</h6>
+                   <h6 class="fw-600 mb-2 mb-sm-3 mb-md-0">Expenditure</h6>
                  </div>
-                 <div class="col-4 col-sm-4 col-md-3 col-lg-2" *ngIf="!isRich6A">
+                 <div class="col-4 col-sm-4 col-md-3 col-lg-2">
                    <div class="text-end">
                      <button type="button" class="btn btn-sm btn-lime-green" (click)="openModel('add')"><span
                          class="bi bi-plus-lg"></span> Add</button>
@@ -1565,7 +1528,7 @@
  </main>
 
  <!-- begin:: add Preliminary survey for selection of potential SHGs modal -->
- <div class="modal fade" id="addSurvey" tabindex="-1" aria-labelledby="addSurveyLabel" aria-hidden="true" *ngIf="!isRich6A">
+ <div class="modal fade" id="addSurvey" tabindex="-1" aria-labelledby="addSurveyLabel" aria-hidden="true">
    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
      <div class="modal-content">
        <div class="modal-header py-2">

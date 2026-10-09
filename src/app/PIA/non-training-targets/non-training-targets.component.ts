@@ -142,7 +142,9 @@ export class NonTrainingTargetsComponent implements OnInit {
   get showRestrictedTabCard(): boolean {
     const name = this.loginsessionDetails?.agencyName;
     if (name === 'RICH_6A') {
-      return !!this.selectedRichMilestone;
+      // Show the expenditure card for every RICH_6A sub-activity except
+      // the Submission of Inception Report (which has no expenditure flow).
+      return (this.selectedSubActivityName || '').trim() !== 'Submission of Inception Report';
     }
     if (name === 'RICH_6B') {
       // Physical-report sub-activities render via the ALEAP-style card gated on
