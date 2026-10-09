@@ -61,6 +61,9 @@ export class NonTrainingTargetsComponent implements OnInit {
   }
   richMilestonesList: any[] = [];
   selectedRichMilestone: any = null;
+  editingRowOriginalMilestoneId: any = null;
+  editingRowOriginalAmount: number = 0;
+  milestoneAmountCap: number | null = null;
   getRichMilestonesList() {
     this._commonService.getDataByUrl(APIS.nontrainingtargets.getRichMilestones).subscribe(
       (res: any) => {
@@ -77,12 +80,48 @@ export class NonTrainingTargetsComponent implements OnInit {
     if (this.financialForm.get('richMilestoneId')) {
       this.financialForm.get('richMilestoneId')?.setValue(numericId || null);
     }
+    if (this.selectedRichMilestone) {
+      const m = this.selectedRichMilestone;
+      // Prefer explicit availableAmount; fall back to amount - consumedAmount.
+      const base =
+        m?.availableAmount != null
+          ? Number(m.availableAmount) || 0
+          : Math.max(0, (Number(m?.amount) || 0) - (Number(m?.consumedAmount) || 0));
+      // On edit, if the row is still attached to the same milestone, credit back
+      // this row's original amount so the user can update it up to the milestone's
+      // true free balance.
+      const creditBack =
+        this.iseditMode &&
+        this.editingRowOriginalMilestoneId != null &&
+        Number(this.editingRowOriginalMilestoneId) === numericId
+          ? Number(this.editingRowOriginalAmount) || 0
+          : 0;
+      this.milestoneAmountCap = base + creditBack;
+    } else {
+      this.milestoneAmountCap = null;
+    }
+    this.applyExpenditureAmountValidators();
+  }
+  private applyExpenditureAmountValidators() {
+    const mode = this.financialForm?.get('modeOfPayment')?.value;
+    const validators: any[] = [Validators.required, Validators.min(0)];
+    let max: number | undefined;
+    if (mode === 'CASH') max = 5000;
+    if (this.milestoneAmountCap !== null && this.milestoneAmountCap !== undefined) {
+      max = max !== undefined ? Math.min(max, this.milestoneAmountCap) : this.milestoneAmountCap;
+    }
+    if (max !== undefined) validators.push(Validators.max(max));
+    const ctrl = this.financialForm?.get('expenditureAmount');
+    if (ctrl) {
+      ctrl.setValidators(validators);
+      ctrl.updateValueAndValidity();
+    }
   }
   private buildFinancialDto(): any {
     const { richMilestoneId, achievementDetails, ...rest } = this.financialForm.value;
     const dto: any = { ...rest };
     if (richMilestoneId) {
-      dto.richMilestoneIds = [Number(richMilestoneId)];
+      dto.richMilestoneId = Number(richMilestoneId);
     }
     if (this.isPhysicalReportBudget) {
       dto.achievementDetails = achievementDetails || '';
@@ -536,11 +575,18 @@ openModel(mode: string, item?: any): void {
         this.uploadedFilesFinance=null
       this.financialForm.reset();
       this.iseditMode = false;
+      this.editingRowOriginalMilestoneId = null;
+      this.editingRowOriginalAmount = 0;
+      this.selectedRichMilestone = null;
+      this.milestoneAmountCap = null;
       this.resetForm();
+      this.applyExpenditureAmountValidators();
     }
     if (mode === 'edit') {
       this.preliminaryID=item?.id
       this.iseditMode = true;
+      this.editingRowOriginalMilestoneId = item?.richMilestoneId ?? null;
+      this.editingRowOriginalAmount = Number(item?.expenditureAmount) || 0;
       this.modeOfPaymentIt(item?.modeOfPayment);
       this.uploadedFilesFinance=item?.uploadBillUrl
       this.uploadedSupportingDoc = item?.supportDocumentUrl || null;
@@ -560,6 +606,11 @@ openModel(mode: string, item?: any): void {
 
     // Store the filename separately
     this.existingFileName = item?.uploadBillUrl || '';
+
+    // Re-apply milestone cap now that richMilestoneId is patched in.
+    if (item?.richMilestoneId) {
+      this.onRichMilestoneChange(item.richMilestoneId);
+    }
   }
   
   const modal1 = new bootstrap.Modal(document.getElementById('addSurvey'));
@@ -897,6 +948,8 @@ removeFile(): void {
           this.financialForm.get('checkNo')?.updateValueAndValidity();
           this.financialForm.get('checkDate')?.updateValueAndValidity();
         }
+        // Re-apply amount validators so milestone cap (if any) survives mode-switch.
+        this.applyExpenditureAmountValidators();
       }
 
   get fContingency() {

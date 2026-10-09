@@ -125,8 +125,8 @@ designations = [
             if (
             this.selectedBudgetHead == '77' ||
             this.selectedBudgetHead == '78' ||
-            this.selectedBudgetHead == '79'  || this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' || this.selectedBudgetHead=='144' || this.selectedBudgetHead=='83' ||
-            
+            this.selectedBudgetHead == '79'  || this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' || this.selectedBudgetHead=='144' || this.selectedBudgetHead=='83' || this.selectedBudgetHead=='132' ||
+
             this.selectedBudgetHead == '80' ||
             this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' ||
             this.selectedBudgetHead == '81'
@@ -159,7 +159,7 @@ designations = [
             this.selectedBudgetHead == '77' ||
             this.selectedBudgetHead == '78' ||
             this.selectedBudgetHead == '79' ||
-            this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' || this.selectedBudgetHead=='144' ||
+            this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' || this.selectedBudgetHead=='144' || this.selectedBudgetHead=='132' ||
             this.selectedBudgetHead == '80' || this.selectedBudgetHead == '83' ||
             this.selectedBudgetHead=='142' || this.selectedBudgetHead=='143' ||
             this.selectedBudgetHead == '81'
@@ -246,7 +246,7 @@ createForm(): FormGroup {
   }
   get isPhysicalReportBudget(): boolean {
     const s = String(this.selectedBudgetHead);
-    return s === '83' || s === '144';
+    return s === '83' || s === '144' || s === '132';
   }
   uploadedSupportingDoc: any;
   onSupportingDocSelected(event: any): void {

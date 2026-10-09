@@ -76,11 +76,79 @@ export class NonTrainingTargetCodeComponent implements OnInit {
   onBudgetHeadChange(event: any) {
     this.selectedBudgetHead = event;
     console.log('Selected Budget Head:', this.selectedBudgetHead);
+    this.applyPhysicalReportValidators();
     this.getDeatilOfTargets()
+  }
+  get isPhysicalReportBudget(): boolean {
+    const s = String(this.selectedBudgetHead);
+    return s === '163';
+  }
+  uploadedSupportingDoc: any;
+  onSupportingDocSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) this.uploadedSupportingDoc = file;
+  }
+  removeSupportingDoc(): void {
+    this.uploadedSupportingDoc = null;
+  }
+  private applyPhysicalReportValidators() {
+    const ach = this.financialForm?.get('achievementDetails');
+    const cat = this.financialForm?.get('category');
+    if (this.isPhysicalReportBudget) {
+      ach?.setValidators([Validators.required]);
+      // Category dropdown is hidden for physical-report sub-activities — drop
+      // its required validator so the form can actually submit.
+      cat?.clearValidators();
+      cat?.setValue(cat?.value || null);
+    } else {
+      ach?.clearValidators();
+      cat?.setValidators([Validators.required]);
+    }
+    ach?.updateValueAndValidity();
+    cat?.updateValueAndValidity();
+  }
+  private buildFinancialDto(): any {
+    const { achievementDetails, ...rest } = this.financialForm.value;
+    const dto: any = { ...rest };
+    if (this.isPhysicalReportBudget) {
+      dto.achievementDetails = achievementDetails || '';
+    }
+    return dto;
+  }
+  downloadSupportDocument(filePath: string): void {
+    if (!filePath) return;
+    const trimmed = filePath.split('public_html/')[1];
+    if (!trimmed) return;
+    const encoded = trimmed.split('/').map(seg => encodeURIComponent(seg)).join('/');
+    const fullUrl = `https://metaverseedu.in/${encoded}`;
+    const fileName = trimmed.split('/').pop() || 'supporting-document';
+    fetch(fullUrl)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); })
+      .then(blob => {
+        const objectUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => window.URL.revokeObjectURL(objectUrl), 1000);
+      })
+      .catch(() => {
+        const link = document.createElement('a');
+        link.href = fullUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.toastrService.warning('Direct download blocked. File opened in a new tab — right-click and Save.');
+      });
   }
  TargetDetails: any;
     getDeatilOfTargets() {
         this.TargetDetails=[]
+        this.getPreliminaryData = [];
         this._commonService.getDataByUrl(APIS.nontrainingtargets.getNonTrainingtargets+this.selectedBudgetHead).subscribe((res: any) => {
           this.TargetDetails = res.data;
           this.physicalTarget = this.TargetDetails?.physicalTarget || 0;
@@ -88,7 +156,7 @@ export class NonTrainingTargetCodeComponent implements OnInit {
           this.physicalTargetAchievement = this.TargetDetails?.physicalTargetAchievement || 0;
           this.financialTargetAchievement = this.TargetDetails?.financialTargetAchievement || 0;
           console.log('TargetDetails:', this.TargetDetails);
-       if(this.selectedBudgetHead=='1' || this.selectedBudgetHead=='73' || this.selectedBudgetHead=='11' || this.selectedBudgetHead=='20' || this.selectedBudgetHead=='21' || this.selectedBudgetHead=='22' || this.selectedBudgetHead=='23' || this.selectedBudgetHead=='24' || this.selectedBudgetHead=='25' || this.selectedBudgetHead=='66'){
+       if(this.selectedBudgetHead=='1' || this.selectedBudgetHead=='73' || this.selectedBudgetHead=='11' || this.selectedBudgetHead=='20' || this.selectedBudgetHead=='21' || this.selectedBudgetHead=='22' || this.selectedBudgetHead=='23' || this.selectedBudgetHead=='24' || this.selectedBudgetHead=='25' || this.selectedBudgetHead=='66' || this.selectedBudgetHead=='163'){
             this.getPreliminaryDataById()
 
           }
@@ -108,7 +176,7 @@ export class NonTrainingTargetCodeComponent implements OnInit {
           
         }, (error) => {
 
-           if(this.selectedBudgetHead=='1'  || this.selectedBudgetHead=='73'  || this.selectedBudgetHead=='11' || this.selectedBudgetHead=='20' || this.selectedBudgetHead=='21' || this.selectedBudgetHead=='22' || this.selectedBudgetHead=='23' || this.selectedBudgetHead=='24' || this.selectedBudgetHead=='25' || this.selectedBudgetHead=='66'){
+           if(this.selectedBudgetHead=='1'  || this.selectedBudgetHead=='73'  || this.selectedBudgetHead=='11' || this.selectedBudgetHead=='20' || this.selectedBudgetHead=='21' || this.selectedBudgetHead=='22' || this.selectedBudgetHead=='23' || this.selectedBudgetHead=='24' || this.selectedBudgetHead=='25' || this.selectedBudgetHead=='66' || this.selectedBudgetHead=='163'){
             this.getPreliminaryDataById()
 
           }
@@ -256,7 +324,8 @@ createForm(): FormGroup {
       purpose: ['', Validators.required],
       uploadBillUrl: [''],
       checkNo: [''],
-      checkDate: ['']
+      checkDate: [''],
+      achievementDetails: [''],
     });
   }
 
@@ -288,6 +357,7 @@ createForm(): FormGroup {
       this.iseditMode = true;
       this.modeOfPaymentIt(item?.modeOfPayment);
       this.uploadedFilesFinance=item?.uploadBillUrl
+      this.uploadedSupportingDoc = item?.supportDocumentUrl || null;
       this.financialForm.patchValue({
         agencyId: item?.agencyId || 0,
         nonTrainingSubActivityId: item?.nonTrainingSubActivityId || 0,
@@ -306,9 +376,9 @@ createForm(): FormGroup {
         uploadBillUrl: '',
         checkNo: item?.checkNo || '',
         checkDate: item?.checkDate ? this.convertToISOFormat(item?.checkDate) : '',
-       
+        achievementDetails: item?.achievementDetails || '',
       });
-      
+
     }
     const modal1 = new bootstrap.Modal(document.getElementById('addSurvey'));
     modal1.show();
@@ -467,14 +537,17 @@ createForm(): FormGroup {
         this.f['nonTrainingActivityId'].setValue(Number(this.selectedActivity));
         const formData = new FormData();
             console.log('this.uploadedFilesFinance:', this.uploadedFilesFinance,Object(this.uploadedFilesFinance).length>0,typeof this.uploadedFilesFinance);
-             if (this.uploadedFilesFinance?.name && typeof this.uploadedFilesFinance !== 'string') {
+             if (this.uploadedFilesFinance && this.uploadedFilesFinance.name && typeof this.uploadedFilesFinance !== 'string') {
               formData.append("files", this.uploadedFilesFinance);
               }
               else{
                 this.financialForm.patchValue({uploadBillUrl:this.uploadedFilesFinance})
               }
+              if (this.uploadedSupportingDoc && this.uploadedSupportingDoc.name && typeof this.uploadedSupportingDoc !== 'string') {
+                formData.append("supportDocument", this.uploadedSupportingDoc);
+              }
 
-              formData.append("dto", JSON.stringify({...this.financialForm.value,nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
+              formData.append("dto", JSON.stringify({...this.buildFinancialDto(),nonTrainingSubActivityId:Number(this.selectedBudgetHead),id:this.preliminaryID}));
 
          
         this._commonService.update(APIS.nontrainingtargets.updateNonTrainingtargetsAleapPriliminary,formData,this.preliminaryID).subscribe((res: any) => {
@@ -508,11 +581,14 @@ createForm(): FormGroup {
         this.f['nonTrainingSubActivityId'].setValue(Number(this.selectedBudgetHead));
         this.f['nonTrainingActivityId'].setValue(Number(this.selectedActivity));
          const formData = new FormData();
-          formData.append("dto", JSON.stringify({...this.financialForm.value}));
+          formData.append("dto", JSON.stringify(this.buildFinancialDto()));
 
            if (this.uploadedFilesFinance) {
              formData.append("file", this.uploadedFilesFinance);
              }
+          if (this.uploadedSupportingDoc && this.uploadedSupportingDoc.name && typeof this.uploadedSupportingDoc !== 'string') {
+            formData.append("supportDocument", this.uploadedSupportingDoc);
+          }
         this._commonService.add(APIS.nontrainingtargets.saveNonTrainingtargetsCodeIT,formData).subscribe((res: any) => {
           this.toastrService.success('Data saved successfully','Non Training Progress Data Success!');
           this.getPreliminaryData.push(res.data)

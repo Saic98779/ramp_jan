@@ -1297,9 +1297,9 @@
                      </tr>
                      <tr *ngFor="let preliminary of getPreliminaryData; let i = index">
                        <td>{{ i + 1 }}</td>
-                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ (preliminary?.milestones && preliminary.milestones[0]) ? preliminary.milestones[0].paymentIteration : '' }}</td>
-                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ (preliminary?.milestones && preliminary.milestones[0]) ? preliminary.milestones[0].paymentMilestone : '' }}</td>
-                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ (preliminary?.milestones && preliminary.milestones[0]) ? (preliminary.milestones[0].amount | commaSeperationIndia) : '' }}</td>
+                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ preliminary?.richMilestone?.paymentIteration || (preliminary?.milestones && preliminary.milestones[0] ? preliminary.milestones[0].paymentIteration : '') }}</td>
+                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ preliminary?.richMilestone?.paymentMilestone || (preliminary?.milestones && preliminary.milestones[0] ? preliminary.milestones[0].paymentMilestone : '') }}</td>
+                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ preliminary?.richMilestone?.amount != null ? (preliminary.richMilestone.amount | commaSeperationIndia) : ((preliminary?.milestones && preliminary.milestones[0]) ? (preliminary.milestones[0].amount | commaSeperationIndia) : '') }}</td>
                        <td>{{ preliminary?.paymentDate  }}</td>
                        <!-- <td *>{{preliminary?.category}}</td> -->
                        <!-- <td>{{ preliminary.billDate | date: 'dd-MM-yyyy' }}</td> -->
@@ -1596,18 +1596,25 @@
                  <label for="rmMilestone">Payment Milestone</label>
                </div>
              </div>
-             <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+             <div class="col-12 col-sm-6 col-md-2 col-lg-2">
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" id="rmPercentage"
                    [value]="selectedRichMilestone?.paymentPercentage != null ? selectedRichMilestone.paymentPercentage + '%' : ''" disabled readonly>
-                 <label for="rmPercentage">Payment Percentage</label>
+                 <label for="rmPercentage">Payment %</label>
                </div>
              </div>
-             <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+             <div class="col-12 col-sm-6 col-md-2 col-lg-2">
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" id="rmAmount"
                    [value]="selectedRichMilestone?.amount != null ? (selectedRichMilestone.amount | commaSeperationIndia) : ''" disabled readonly>
-                 <label for="rmAmount">Amount</label>
+                 <label for="rmAmount">Total Amount</label>
+               </div>
+             </div>
+             <div class="col-12 col-sm-6 col-md-2 col-lg-2">
+               <div class="form-floating mb-3">
+                 <input type="text" class="form-control" id="rmAvailable"
+                   [value]="milestoneAmountCap != null ? (milestoneAmountCap | commaSeperationIndia) : ''" disabled readonly>
+                 <label for="rmAvailable">Available</label>
                </div>
              </div>
            </div>
@@ -1655,13 +1662,16 @@
              <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                <div class="form-floating mb-3">
                  <input type="number" class="form-control" formControlName="expenditureAmount"
-                   [class.is-invalid]="isSubmitted && f['expenditureAmount'].invalid">
+                   [class.is-invalid]="(isSubmitted || f['expenditureAmount'].dirty || f['expenditureAmount'].touched) && f['expenditureAmount'].invalid">
                  <label for="expenditureAmount">Amount</label>
-                  <div *ngIf="isSubmitted && f['expenditureAmount'].invalid" class="invalid-feedback">
+                  <div *ngIf="(isSubmitted || f['expenditureAmount'].dirty || f['expenditureAmount'].touched) && f['expenditureAmount'].invalid" class="invalid-feedback">
                   <span *ngIf="f['expenditureAmount'].errors?.['required']">Expenditure amount is required</span>
                   <span *ngIf="f['expenditureAmount'].errors?.['min']">Amount must be greater than 0</span>
-                   <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed ₹5000</span>
+                   <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed ₹{{ f['expenditureAmount'].errors?.['max']?.max | commaSeperationIndia }}</span>
                 </div>
+                <small *ngIf="selectedRichMilestone && milestoneAmountCap != null" class="text-muted d-block mt-1">
+                  Available for this milestone: ₹{{ milestoneAmountCap | commaSeperationIndia }}
+                </small>
                </div>
              </div>
 
