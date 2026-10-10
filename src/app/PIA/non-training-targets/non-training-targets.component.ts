@@ -142,9 +142,8 @@ export class NonTrainingTargetsComponent implements OnInit {
   get showRestrictedTabCard(): boolean {
     const name = this.loginsessionDetails?.agencyName;
     if (name === 'RICH_6A') {
-      // Show the expenditure card for every RICH_6A sub-activity except
-      // the Submission of Inception Report (which has no expenditure flow).
-      return (this.selectedSubActivityName || '').trim() !== 'Submission of Inception Report';
+      // Show the expenditure card for every RICH_6A sub-activity.
+      return true;
     }
     if (name === 'RICH_6B') {
       // Physical-report sub-activities render via the ALEAP-style card gated on
@@ -207,6 +206,7 @@ export class NonTrainingTargetsComponent implements OnInit {
        this._commonService.setOption('subActivityId',null)
     }
     this.applyRawMaterialValidators();
+    this.applyMilestoneRequiredValidator();
 
     if(this.selectedBudgetHead!='70'){
         if(this.selectedBudgetHead=='134'){
@@ -385,6 +385,16 @@ export class NonTrainingTargetsComponent implements OnInit {
       richMilestoneId: [null],
       achievementDetails: [''],
     });
+  }
+  private applyMilestoneRequiredValidator() {
+    const ctrl = this.financialForm?.get('richMilestoneId');
+    if (!ctrl) return;
+    if (this.showMilestoneSelector) {
+      ctrl.setValidators([Validators.required]);
+    } else {
+      ctrl.clearValidators();
+    }
+    ctrl.updateValueAndValidity();
   }
   private applyRawMaterialValidators() {
     const ctrl = this.financialForm?.get('achievementDetails');

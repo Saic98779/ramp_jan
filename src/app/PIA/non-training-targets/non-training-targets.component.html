@@ -1059,7 +1059,7 @@
                            <div class="form-floating mb-3">
                              <input type="date" class="form-control" formControlName="paymentDate" appDisableFutureDates
                                [class.is-invalid]="isSubmitted && f['paymentDate'].invalid">
-                             <label for="paymentDate">Payment Date</label>
+                             <label for="paymentDate">Payment Date <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['paymentDate'].invalid" class="invalid-feedback">
                                Payment date is required
                              </div>
@@ -1069,7 +1069,7 @@
                            <div class="form-floating mb-3">
                              <input type="number" class="form-control" formControlName="expenditureAmount"
                                [class.is-invalid]="isSubmitted && f['expenditureAmount'].invalid">
-                             <label for="expenditureAmount">Amount</label>
+                             <label for="expenditureAmount">Amount <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['expenditureAmount'].invalid" class="invalid-feedback">
                                <span *ngIf="f['expenditureAmount'].errors?.['required']">Expenditure amount is required</span>
                                <span *ngIf="f['expenditureAmount'].errors?.['min']">Amount must be greater than 0</span>
@@ -1081,7 +1081,7 @@
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="billNo"
                                [class.is-invalid]="isSubmitted && f['billNo'].invalid">
-                             <label for="billNo">Bill No.</label>
+                             <label for="billNo">Bill No. <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['billNo'].invalid" class="invalid-feedback">
                                Bill number is required
                              </div>
@@ -1091,7 +1091,7 @@
                            <div class="form-floating mb-3">
                              <input type="date" class="form-control" formControlName="billDate" appDisableFutureDates
                                [class.is-invalid]="isSubmitted && f['billDate'].invalid">
-                             <label for="billDate">Bill Date</label>
+                             <label for="billDate">Bill Date <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['billDate'].invalid" class="invalid-feedback">
                                Bill date is required
                              </div>
@@ -1107,7 +1107,7 @@
                                <option value="UPI">UPI</option>
                                <option value="CHEQUE">CHEQUE</option>
                              </select>
-                             <label for="modeOfPayment">Mode Of Payment</label>
+                             <label for="modeOfPayment">Mode Of Payment <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['modeOfPayment'].invalid" class="invalid-feedback">
                                Payment mode is required
                              </div>
@@ -1117,7 +1117,7 @@
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="payeeName"
                                [class.is-invalid]="isSubmitted && f['payeeName'].invalid">
-                             <label for="payeeName">Payee Name</label>
+                             <label for="payeeName">Payee Name <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['payeeName'].invalid" class="invalid-feedback">
                                Payee name is required
                              </div>
@@ -1128,7 +1128,7 @@
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="accountNumber"
                                [class.is-invalid]="isSubmitted && f['accountNumber'].invalid">
-                             <label for="accountNumber">Account Number</label>
+                             <label for="accountNumber">Account Number <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['accountNumber'].invalid" class="invalid-feedback">
                                Please enter a valid account number
                              </div>
@@ -1137,7 +1137,7 @@
                          <div class="col-12 col-sm-6 col-md-4 col-lg-4" *ngIf="f['modeOfPayment']?.value === 'UPI'">
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="transactionId">
-                             <label for="transactionId">Transaction Id</label>
+                             <label for="transactionId">Transaction Id <span class="text-danger">*</span></label>
                            </div>
                          </div>
                          <div class="col-12 col-sm-6 col-md-4 col-lg-4"
@@ -1145,7 +1145,7 @@
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="bankName"
                                [class.is-invalid]="isSubmitted && f['bankName'].invalid">
-                             <label for="bankName">Bank</label>
+                             <label for="bankName">Bank <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['bankName'].invalid" class="invalid-feedback">
                                Bank name is required
                              </div>
@@ -1156,7 +1156,7 @@
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="ifscCode"
                                [class.is-invalid]="isSubmitted && f['ifscCode'].invalid">
-                             <label for="ifscCode">IFSC Code</label>
+                             <label for="ifscCode">IFSC Code <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['ifscCode'].invalid" class="invalid-feedback">
                                Invalid IFSC format. Correct format: AAAA0BBBBBB (4 Captial letters, then 0, then 6 letters/numbers)
                              </div>
@@ -1166,7 +1166,7 @@
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="checkNo"
                                [class.is-invalid]="isSubmitted && f['checkNo'].invalid">
-                             <label for="checkNo">Cheque No</label>
+                             <label for="checkNo">Cheque No <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['checkNo'].invalid" class="invalid-feedback">
                                Cheque number is required
                              </div>
@@ -1176,7 +1176,7 @@
                            <div class="form-floating mb-3">
                              <input type="date" class="form-control" formControlName="checkDate"
                                [class.is-invalid]="isSubmitted && f['checkDate'].invalid">
-                             <label for="checkDate">Cheque Date</label>
+                             <label for="checkDate">Cheque Date <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['checkDate'].invalid" class="invalid-feedback">
                                Cheque date is required
                              </div>
@@ -1186,7 +1186,7 @@
                            <div class="form-floating mb-3">
                              <input type="text" class="form-control" formControlName="purpose"
                                [class.is-invalid]="isSubmitted && f['purpose'].invalid">
-                             <label for="purpose">Purpose</label>
+                             <label for="purpose">Purpose <span class="text-danger">*</span></label>
                              <div *ngIf="isSubmitted && f['purpose'].invalid" class="invalid-feedback">
                                Purpose is required
                              </div>
@@ -1235,9 +1235,9 @@
                    <thead class="bg-lime-green">
                      <tr>
                        <th>S.No</th>
-                       <th *ngIf="isRestrictedAgency && !isPhysicalReportBudget">Payment Iteration</th>
-                       <th *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ isRich6A ? 'Milestone Details' : 'Milestone' }}</th>
-                       <th *ngIf="isRestrictedAgency && !isPhysicalReportBudget">Milestone Amount</th>
+                       <th *ngIf="showMilestoneSelector">Payment Iteration</th>
+                       <th *ngIf="showMilestoneSelector">{{ isRich6A ? 'Milestone Details' : 'Milestone' }}</th>
+                       <th *ngIf="showMilestoneSelector">Milestone Amount</th>
                        <th>Report Submission Date</th>
                        <!-- <th> Vendor Company Name</th> -->
                        <!-- <th>Date of Approval</th> -->
@@ -1256,13 +1256,13 @@
                    </thead>
                    <tbody>
                      <tr *ngIf="!getPreliminaryData || getPreliminaryData.length === 0">
-                       <td [attr.colspan]="isRich6A ? 16 : (isRestrictedAgency ? 17 : 14)" class="text-center text-muted">Data Not available.</td>
+                       <td [attr.colspan]="(showMilestoneSelector ? 3 : 0) + (isRich6A ? 13 : 14)" class="text-center text-muted">Data Not available.</td>
                      </tr>
                      <tr *ngFor="let preliminary of getPreliminaryData; let i = index">
                        <td>{{ i + 1 }}</td>
-                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ preliminary?.richMilestone?.paymentIteration || (preliminary?.milestones && preliminary.milestones[0] ? preliminary.milestones[0].paymentIteration : '') }}</td>
-                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ preliminary?.richMilestone?.paymentMilestone || (preliminary?.milestones && preliminary.milestones[0] ? preliminary.milestones[0].paymentMilestone : '') }}</td>
-                       <td *ngIf="isRestrictedAgency && !isPhysicalReportBudget">{{ preliminary?.richMilestone?.amount != null ? (preliminary.richMilestone.amount | commaSeperationIndia) : ((preliminary?.milestones && preliminary.milestones[0]) ? (preliminary.milestones[0].amount | commaSeperationIndia) : '') }}</td>
+                       <td *ngIf="showMilestoneSelector">{{ preliminary?.richMilestone?.paymentIteration || (preliminary?.milestones && preliminary.milestones[0] ? preliminary.milestones[0].paymentIteration : '') }}</td>
+                       <td *ngIf="showMilestoneSelector">{{ preliminary?.richMilestone?.paymentMilestone || (preliminary?.milestones && preliminary.milestones[0] ? preliminary.milestones[0].paymentMilestone : '') }}</td>
+                       <td *ngIf="showMilestoneSelector">{{ preliminary?.richMilestone?.amount != null ? (preliminary.richMilestone.amount | commaSeperationIndia) : ((preliminary?.milestones && preliminary.milestones[0]) ? (preliminary.milestones[0].amount | commaSeperationIndia) : '') }}</td>
                        <td>{{ preliminary?.paymentDate  }}</td>
                        <!-- <td *>{{preliminary?.category}}</td> -->
                        <!-- <td>{{ preliminary.billDate | date: 'dd-MM-yyyy' }}</td> -->
@@ -1532,7 +1532,7 @@
    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
      <div class="modal-content">
        <div class="modal-header py-2">
-         <h6 class="modal-title" id="addSurveyLabel">{{iseditMode?'Update' :'Add'}} {{(isRestrictedAgency && !isPhysicalReportBudget) ? 'Milestone' : 'Expenditure'}}</h6>
+         <h6 class="modal-title" id="addSurveyLabel">{{iseditMode?'Update' :'Add'}} {{showMilestoneSelector ? 'Milestone' : 'Expenditure'}}</h6>
          <button type="button" class="btn-close me-1" data-bs-dismiss="modal" aria-label="Close"
            (click)="resetForm()"></button>
        </div>
@@ -1543,13 +1543,17 @@
                <div class="form-floating mb-3">
                  <select class="form-select" id="richMilestoneSelect"
                    formControlName="richMilestoneId"
-                   (change)="onRichMilestoneChange($any($event.target).value)">
+                   (change)="onRichMilestoneChange($any($event.target).value)"
+                   [class.is-invalid]="isSubmitted && f['richMilestoneId'].invalid">
                    <option value="">Select Milestone</option>
                    <option *ngFor="let m of richMilestonesList" [value]="m?.richMilestoneId">
                      {{ m?.paymentIteration }}
                    </option>
                  </select>
-                 <label for="richMilestoneSelect">Milestone</label>
+                 <label for="richMilestoneSelect">Milestone <span class="text-danger">*</span></label>
+                 <div *ngIf="isSubmitted && f['richMilestoneId'].invalid" class="invalid-feedback">
+                   Milestone is required
+                 </div>
                </div>
              </div>
              <div class="col-12 col-sm-6 col-md-3 col-lg-3">
@@ -1603,7 +1607,7 @@
                <div class="form-floating mb-3">
                  <input type="date" class="form-control" formControlName="paymentDate" appDisableFutureDates
                    [class.is-invalid]="isSubmitted && f['paymentDate'].invalid">
-                 <label for="paymentDate">Payment Date</label>
+                 <label for="paymentDate">Payment Date <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['paymentDate'].invalid" class="invalid-feedback">
                    Payment date is required
                  </div>
@@ -1626,14 +1630,14 @@
                <div class="form-floating mb-3">
                  <input type="number" class="form-control" formControlName="expenditureAmount"
                    [class.is-invalid]="(isSubmitted || f['expenditureAmount'].dirty || f['expenditureAmount'].touched) && f['expenditureAmount'].invalid">
-                 <label for="expenditureAmount">Amount</label>
+                 <label for="expenditureAmount">Amount <span class="text-danger">*</span></label>
                   <div *ngIf="(isSubmitted || f['expenditureAmount'].dirty || f['expenditureAmount'].touched) && f['expenditureAmount'].invalid" class="invalid-feedback">
                   <span *ngIf="f['expenditureAmount'].errors?.['required']">Expenditure amount is required</span>
                   <span *ngIf="f['expenditureAmount'].errors?.['min']">Amount must be greater than 0</span>
-                   <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed ₹{{ f['expenditureAmount'].errors?.['max']?.max | commaSeperationIndia }}</span>
+                   <span *ngIf="f['expenditureAmount'].errors?.['max']">Amount cannot exceed {{ f['expenditureAmount'].errors?.['max']?.max | commaSeperationIndia }}</span>
                 </div>
                 <small *ngIf="selectedRichMilestone && milestoneAmountCap != null" class="text-muted d-block mt-1">
-                  Available for this milestone: ₹{{ milestoneAmountCap | commaSeperationIndia }}
+                  Available for this milestone: {{ milestoneAmountCap | commaSeperationIndia }}
                 </small>
                </div>
              </div>
@@ -1643,7 +1647,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="billNo"
                    [class.is-invalid]="isSubmitted && f['billNo'].invalid">
-                 <label for="billNo">Bill No.</label>
+                 <label for="billNo">Bill No. <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['billNo'].invalid" class="invalid-feedback">
                    Bill number is required
                  </div>
@@ -1655,7 +1659,7 @@
                <div class="form-floating mb-3">
                  <input type="date" class="form-control" formControlName="billDate" appDisableFutureDates
                    [class.is-invalid]="isSubmitted && f['billDate'].invalid">
-                 <label for="billDate">Bill Date</label>
+                 <label for="billDate">Bill Date <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['billDate'].invalid" class="invalid-feedback">
                    Bill date is required
                  </div>
@@ -1673,7 +1677,7 @@
                    <option value="UPI">UPI</option>
                    <option value="CHEQUE">CHEQUE</option>
                  </select>
-                 <label for="modeOfPayment">Mode Of Payment</label>
+                 <label for="modeOfPayment">Mode Of Payment <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['modeOfPayment'].invalid" class="invalid-feedback">
                    Payment mode is required
                  </div>
@@ -1685,7 +1689,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="payeeName"
                    [class.is-invalid]="isSubmitted && f['payeeName'].invalid">
-                 <label for="payeeName">Payee Name</label>
+                 <label for="payeeName">Payee Name <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['payeeName'].invalid" class="invalid-feedback">
                    Payee name is required
                  </div>
@@ -1698,7 +1702,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="accountNumber"
                    [class.is-invalid]="isSubmitted && f['accountNumber'].invalid">
-                 <label for="accountNumber">Account Number</label>
+                 <label for="accountNumber">Account Number <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['accountNumber'].invalid" class="invalid-feedback">
                    Please enter a valid account number
                  </div>
@@ -1709,7 +1713,7 @@
              <div class="col-12 col-sm-6 col-md-4 col-lg-4" *ngIf="f['modeOfPayment']?.value === 'UPI' ">
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="transactionId">
-                 <label for="transactionId">Transaction Id</label>
+                 <label for="transactionId">Transaction Id <span class="text-danger">*</span></label>
                </div>
              </div>
 
@@ -1719,7 +1723,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="bankName"
                    [class.is-invalid]="isSubmitted && f['bankName'].invalid">
-                 <label for="bankName">Bank</label>
+                 <label for="bankName">Bank <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['bankName'].invalid" class="invalid-feedback">
                    Bank name is required
                  </div>
@@ -1732,7 +1736,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="ifscCode"
                    [class.is-invalid]="isSubmitted && f['ifscCode'].invalid">
-                 <label for="ifscCode">IFSC Code</label>
+                 <label for="ifscCode">IFSC Code <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['ifscCode'].invalid" class="invalid-feedback">
                    Invalid IFSC format. Correct format: AAAA0BBBBBB (4 Captial letters, then 0, then 6 letters/numbers)
                  </div>
@@ -1744,7 +1748,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="checkNo"
                    [class.is-invalid]="isSubmitted && f['checkNo'].invalid">
-                 <label for="checkNo">Cheque No</label>
+                 <label for="checkNo">Cheque No <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['checkNo'].invalid" class="invalid-feedback">
                    Cheque number is required
                  </div>
@@ -1756,7 +1760,7 @@
                <div class="form-floating mb-3">
                  <input type="date" class="form-control" formControlName="checkDate"
                    [class.is-invalid]="isSubmitted && f['checkDate'].invalid">
-                 <label for="checkDate">Cheque Date</label>
+                 <label for="checkDate">Cheque Date <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['checkDate'].invalid" class="invalid-feedback">
                    Cheque date is required
                  </div>
@@ -1768,7 +1772,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" formControlName="purpose"
                    [class.is-invalid]="isSubmitted && f['purpose'].invalid">
-                 <label for="purpose">Purpose</label>
+                 <label for="purpose">Purpose <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['purpose'].invalid" class="invalid-feedback">
                    Purpose is required
                  </div>
@@ -1781,7 +1785,7 @@
                  <textarea class="form-control" id="achievementDetails" formControlName="achievementDetails"
                    style="height: 110px;"
                    [class.is-invalid]="isSubmitted && f['achievementDetails'].invalid"></textarea>
-                 <label for="achievementDetails">Details of Achievement</label>
+                 <label for="achievementDetails">Details of Achievement <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && f['achievementDetails'].invalid" class="invalid-feedback">
                    Details of achievement is required
                  </div>
@@ -2320,7 +2324,7 @@
                    [class.is-invalid]="isSubmitted && fContingency['ifscCode'].invalid" placeholder="IFSC code"
                    pattern="^[A-Z]{4}0[A-Z0-9]{6}$" maxlength="11"
                    (input)="fContingency['ifscCode'].setValue($any($event.target).value.toUpperCase())">
-                 <label for="ifscCode">IFSC Code</label>
+                 <label for="ifscCode">IFSC Code <span class="text-danger">*</span></label>
                  <div *ngIf="isSubmitted && fContingency['ifscCode'].invalid" class="invalid-feedback">
                    <span *ngIf="fContingency['ifscCode'].errors?.['required']">IFSC code is required</span>
                    <span *ngIf="fContingency['ifscCode'].errors?.['pattern']">Invalid IFSC format. Correct format:
@@ -2528,7 +2532,7 @@
                <div class="form-floating mb-3">
                  <input type="text" class="form-control" id="ifscCode" formControlName="ifscCode"
                    placeholder="IFSC code" readonly>
-                 <label for="ifscCode">IFSC Code</label>
+                 <label for="ifscCode">IFSC Code <span class="text-danger">*</span></label>
                </div>
              </div>
 
@@ -2903,7 +2907,7 @@
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" formControlName="accountNumber" 
                                  [class.is-invalid]="isSubmitted && fTravel['accountNumber'].invalid">
-                    <label for="accountNumber">Account Number</label>
+                    <label for="accountNumber">Account Number <span class="text-danger">*</span></label>
                      <div *ngIf="isSubmitted && fTravel['accountNumber'].invalid" class="invalid-feedback">
                         Please enter a valid account number
                 </div>

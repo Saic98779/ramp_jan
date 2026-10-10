@@ -36,6 +36,7 @@
                                 <th>Bank</th>
                                 <th>IFSC Code</th>
                                 <!-- <th>Upload Bill/Invoice</th> -->
+                                <th class="text-center">Transactions</th>
                                 <th class="text-center" *ngIf="loginsessionDetails?.userRole != 'ADMIN'">Edit / Delete</th>
                             </tr>
                         </thead>
@@ -68,9 +69,26 @@
                                                     <span class="text-danger">No Image</span>
                                                 </ng-container>
                                          </td> -->
+                                <td class="text-center">
+                                    <ng-container *ngIf="item?.transactions?.length; else noTxn">
+                                        <button type="button" class="btn btn-default text-primary btn-sm"
+                                            (click)="openTransactionsModal(item)"
+                                            title="View transactions">
+                                            <span class="bi bi-eye"></span>
+                                        </button>
+                                    </ng-container>
+                                    <ng-template #noTxn><span class="text-muted">—</span></ng-template>
+                                </td>
                                 <td class="text-center" *ngIf="loginsessionDetails?.userRole != 'ADMIN'">
-                                    <button type="button" class="btn btn-default text-lime-green btn-sm" (click)="OpenModal('edit',item)"><span class="bi bi-pencil"></span></button>
-                                    <button type="button" class="btn btn-default text-danger btn-sm" (click)="deleteExpenditure(item)"><span class="bi bi-trash"></span></button>
+                                    <ng-container *ngIf="!item?.transactions?.length; else lockedRow">
+                                        <button type="button" class="btn btn-default text-lime-green btn-sm"
+                                            (click)="OpenModal('edit',item)"><span class="bi bi-pencil"></span></button>
+                                        <button type="button" class="btn btn-default text-danger btn-sm"
+                                            (click)="deleteExpenditure(item)"><span class="bi bi-trash"></span></button>
+                                    </ng-container>
+                                    <ng-template #lockedRow>
+                                        <span class="text-muted" title="Item has transactions — cannot edit or delete">—</span>
+                                    </ng-template>
                                 </td>
                             </tr>
                           
@@ -337,8 +355,54 @@ aria-hidden="true">
                 </ng-container>
                 <ng-container *ngIf="!imagePreviewUrl">
                     <span class="text-danger">No Image Available</span>
-                </ng-container>                
-                
+                </ng-container>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions modal -->
+<div class="modal fade" id="transactionsModal" tabindex="-1" aria-labelledby="transactionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title" id="transactionsModalLabel">
+                    Transactions &mdash; {{ selectedTxnItem?.itemName }}
+                </h6>
+                <button type="button" class="btn-close me-1" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex gap-3 mb-2 text-muted">
+                    <span><strong>Purchased:</strong> {{ selectedTxnItem?.purchasedQuantity }}</span>
+                    <span><strong>Consumed:</strong> {{ selectedTxnItem?.consumedQuantity }}</span>
+                    <span><strong>Available:</strong> {{ selectedTxnItem?.availableQuantity }}</span>
+                    <span><strong>Total Cost:</strong> &#8377;{{ selectedTxnItem?.totalCost | number }}</span>
+                </div>
+                <table class="table table-bordered table-sm">
+                    <thead class="bg-lime-green">
+                        <tr>
+                            <th>S.No</th>
+                            <th>Program</th>
+                            <th class="text-end">Consumed Quantity</th>
+                            <th class="text-end">Allocated Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let t of selectedTxnItem?.transactions; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ t?.programName || ('Program #' + t?.programId) }}</td>
+                            <td class="text-end">{{ t?.consumedQuantity }}</td>
+                            <td class="text-end">&#8377;{{ t?.allocatedCost | number }}</td>
+                        </tr>
+                        <tr *ngIf="!selectedTxnItem?.transactions?.length">
+                            <td colspan="4" class="text-center text-muted">No transactions.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

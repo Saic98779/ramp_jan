@@ -403,6 +403,14 @@ getExpenseIdByName(expenseName: string): number | undefined {
       // open mode
       isEdit:any=false
   Expenditureid:any=''
+  selectedTxnItem: any = null;
+  openTransactionsModal(item: any): void {
+    this.selectedTxnItem = item;
+    const el = document.getElementById('transactionsModal');
+    if (!el) return;
+    const modal = new bootstrap.Modal(el);
+    modal.show();
+  }
   OpenModal(type:any,item?:any):any{
     this.fileErrors='';  
     const modal1 = new bootstrap.Modal(document.getElementById('bulkModal'));
