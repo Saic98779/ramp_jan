@@ -19,7 +19,7 @@ pipeline {
         IMAGE_TAG       = "${env.BUILD_NUMBER}"
         DEPLOY_HOST     = '51.222.221.25'
         DEPLOY_USER     = 'root'
-        SSH_CREDENTIALS = 'ramp-tg-server-ssh'
+        SSH_CREDENTIALS = 'workflow-server-ssh'
         HOST_PORT       = '8090'   // host nginx proxies ramp-tg.metaversedu.in -> 127.0.0.1:8090
         BASE_HREF       = '/'
     }
