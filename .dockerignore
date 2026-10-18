@@ -1,0 +1,12 @@
+node_modules
+dist
+.angular
+.git
+.idea
+.vscode
+*.war
+WEB-INF
+META-INF
+Jenkinsfile
+Dockerfile
+.dockerignore
