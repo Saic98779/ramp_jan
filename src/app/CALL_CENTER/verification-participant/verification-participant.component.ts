@@ -130,7 +130,7 @@ export class VerificationParticipantComponent implements OnInit {
     if (this.selectedAgency) {
       // https://ramp-tg.metaversedu.in/workflow/programs/status/status-list/1?statuses=Attendance%20Marked&statuses=Program%20Execution%20Updated&statuses=Program%20Expenditure%20Updated'
       // `${APIS.programCreation.getProgramsListByAgency}/${this.selectedAgency}`
-      let url=`${APIS.programCreation.getNewProgramListByAgency}/${this.selectedAgency}?statuses=Attendance%20Marked&statuses=Program%20Execution%20Updated&statuses=Program%20Execution&statuses=Program%20Expenditure%20Updated`
+      let url=`${APIS.programCreation.getNewProgramListByAgency}${this.selectedAgency}?statuses=Attendance%20Marked&statuses=Program%20Execution%20Updated&statuses=Program%20Execution&statuses=Program%20Expenditure%20Updated`
       this._commonService.getDataByUrl(url).subscribe({
         next: (data: any) => {
           this.programs = data.data;
@@ -153,7 +153,7 @@ export class VerificationParticipantComponent implements OnInit {
     this.showTable = true;
     this.participants = [];
     if (this.selectedProgram) {
-      this._commonService.getDataByUrl(`${APIS.callCenter.getDataByProgramVerificationId}/${this.selectedProgram}`).subscribe({
+      this._commonService.getDataByUrl(`${APIS.callCenter.getDataByProgramVerificationId}${this.selectedProgram}`).subscribe({
         next: (data: any) => {
           if(data.data.length === 0){
             this.toastrService.success('No Records Found', 'Success');

@@ -53,7 +53,7 @@ export class ViewIncompleteParticipantsComponent implements OnInit {
     agencyProgramListFiltered:any;
     getProgramsByAgencyAdmin(agency:any) {
       this.submitedData = ''
-      this._commonService.getDataByUrl(`${APIS.programCreation.getIncompletProgramsListByAgency+'/'+agency}`).subscribe({
+      this._commonService.getDataByUrl(`${APIS.programCreation.getIncompletProgramsListByAgency+agency}`).subscribe({
         next: (res: any) => {
           this.agencyProgramList = res?.data
           this.agencyProgramListFiltered = this.agencyProgramList

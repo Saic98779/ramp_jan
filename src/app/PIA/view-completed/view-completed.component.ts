@@ -61,7 +61,7 @@ export class ViewCompletedComponent implements OnInit {
         }
         else{
           this.submitedData = ''
-        this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+'/'+agency}`).subscribe({
+        this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+agency}`).subscribe({
           next: (res: any) => {
             this.agencyProgramList = res?.data
           this.agencyProgramListFiltered=this.agencyProgramList
@@ -77,7 +77,7 @@ export class ViewCompletedComponent implements OnInit {
         
       }
       getProgramsByAgency() {
-        this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+'/'+ this.agencyId}`).subscribe({
+        this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+this.agencyId}`).subscribe({
           next: (res: any) => {
             this.agencyProgramList = res?.data
             this.agencyProgramListFiltered=this.agencyProgramList

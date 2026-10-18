@@ -484,7 +484,7 @@ export class ProgramCreationComponent implements OnInit, AfterViewInit {
   agencyProgramList: any;
   programIds:any=''
   getProgramsByAgency() {
-    this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+'/'+this.agencyId}`).subscribe({
+    this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+this.agencyId}`).subscribe({
       next: (res: any) => {
         this.agencyProgramList = res?.data
       },

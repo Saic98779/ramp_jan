@@ -55,7 +55,7 @@ export class ViewParticipantComponent implements OnInit {
     agencyProgramListFiltered:any;
     getProgramsByAgencyAdmin(agency:any) {
       this.submitedData = ''
-      this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+'/'+agency}`).subscribe({
+      this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency+agency}`).subscribe({
         next: (res: any) => {
           this.agencyProgramList = res?.data
           this.agencyProgramListFiltered = this.agencyProgramList

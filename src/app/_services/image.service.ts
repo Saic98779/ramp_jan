@@ -17,7 +17,7 @@ export class ImageService {
   }
 
   getAllImages(programId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${APIS.collageCreation.GET_ALL_IMAGES}/${programId}`);
+    return this.http.get<any[]>(`${APIS.collageCreation.GET_ALL_IMAGES}${programId}`);
   }
 
 

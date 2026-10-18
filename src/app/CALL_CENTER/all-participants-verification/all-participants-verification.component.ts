@@ -76,7 +76,7 @@ export class AllParticipantsVerificationComponent implements OnInit {
     this.programs = [];
     this.selectedProgram = '';
     if (this.selectedAgency) {
-      this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency}/${this.selectedAgency}`).subscribe({
+      this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency}${this.selectedAgency}`).subscribe({
         next: (data: any) => {
           this.programs = data.data;
         },
@@ -96,7 +96,7 @@ export class AllParticipantsVerificationComponent implements OnInit {
     this.showTable = true;
     this.participants = [];
     if (this.selectedProgram) {
-      this._commonService.getDataByUrl(`${APIS.participantdata.getDataByProgramId}/${this.selectedProgram}`).subscribe({
+      this._commonService.getDataByUrl(`${APIS.participantdata.getDataByProgramId}${this.selectedProgram}`).subscribe({
         next: (data: any) => {
           if(data.data.length === 0){
             this.toastrService.success('No Records Found', 'Success');
