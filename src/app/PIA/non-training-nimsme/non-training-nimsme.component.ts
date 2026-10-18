@@ -279,7 +279,7 @@ createForm(): FormGroup {
     const trimmed = filePath.split('public_html/')[1];
     if (!trimmed) return;
     const encoded = trimmed.split('/').map(seg => encodeURIComponent(seg)).join('/');
-    const fullUrl = `https://metaverseedu.in/${encoded}`;
+    const fullUrl = `https://ramp-tg.metaversedu.in/${encoded}`;
     const fileName = trimmed.split('/').pop() || 'supporting-document';
     fetch(fullUrl)
       .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); })

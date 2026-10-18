@@ -19,7 +19,7 @@ export class CommonFileViewerComponent implements OnInit {
     private toastr:ToastrService) {}
 
 
-    readonly BASE_URL = 'https://metaverseedu.in/';
+    readonly BASE_URL = 'https://ramp-tg.metaversedu.in/';
 
 getFullFileUrl(path: string): string {
   const trimmed = path?.split('public_html/')?.[1];

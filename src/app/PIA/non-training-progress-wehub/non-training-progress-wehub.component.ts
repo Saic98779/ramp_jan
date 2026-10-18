@@ -197,7 +197,7 @@ deleteTechnologyAdoptionID: any;
     const trimmed = filePath.split('public_html/')[1];
     if (!trimmed) return;
     const encoded = trimmed.split('/').map(seg => encodeURIComponent(seg)).join('/');
-    const fullUrl = `https://metaverseedu.in/${encoded}`;
+    const fullUrl = `https://ramp-tg.metaversedu.in/${encoded}`;
     const fileName = trimmed.split('/').pop() || 'supporting-document';
     fetch(fullUrl)
       .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); })
@@ -315,7 +315,7 @@ deleteTechnologyAdoptionID: any;
 
 
  getPreliminaryDataById(){
-        https://metaverseedu.in/workflow/non-training/all/expenditures?nonTrainingActivityId=1
+        https://ramp-tg.metaversedu.in/workflow/non-training/all/expenditures?nonTrainingActivityId=1
          this._commonService.getDataByUrl(APIS.nontrainingtargets.getNonTrainingtargetsAleapPriliminaryById+this.selectedBudgetHead).subscribe((res: any) => {
             this.getPreliminaryData=res.data;
             this.financialTargetAchievement=0

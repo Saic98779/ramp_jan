@@ -760,7 +760,7 @@ export class ClosedTicketsComponent implements OnInit {
      };
      return typeClasses[type] || 'bg-secondary';
    }
-  readonly BASE_URL = 'https://metaverseedu.in/';
+  readonly BASE_URL = 'https://ramp-tg.metaversedu.in/';
    // File download URL method
    getFileDownloadUrl(file: any): string {
      

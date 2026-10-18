@@ -609,7 +609,7 @@ export class NonTrainingExpendituresComponent implements OnInit {
      }
     
    }
-   imageUrlDownloadPath = `https://metaverseedu.in/`;
+   imageUrlDownloadPath = `https://ramp-tg.metaversedu.in/`;
    imagePreviewUrl: any
     type:any=''
      showImagePreview(url: any, value: string,type:any) {
@@ -717,7 +717,7 @@ export class NonTrainingExpendituresComponent implements OnInit {
  
              }
    downloadPDF(url:any){
-     let linkUrl = 'https://metaverseedu.in/'+url
+     let linkUrl = 'https://ramp-tg.metaversedu.in/'+url
      const link = document.createElement("a");
      link.setAttribute("download", linkUrl);
      link.setAttribute("target", "_blank");
@@ -727,7 +727,7 @@ export class NonTrainingExpendituresComponent implements OnInit {
      link.remove();
    }
    downloadImage(url:any) {
-   const imageUrl = 'https://metaverseedu.in/'+url;
+   const imageUrl = 'https://ramp-tg.metaversedu.in/'+url;
  
    // const fileName = 'ProgramScreenshot.png'; // Optional: rename the file
  

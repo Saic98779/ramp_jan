@@ -64,7 +64,7 @@ export class HandHoldingAleapComponent implements OnInit {
   isEditMode = false;
   isSubmitted = false;
   editingId: number | null = null;
-  apiUrl = 'https://metaverseedu.in/workflow';
+  apiUrl = 'https://ramp-tg.metaversedu.in/workflow';
   
   uploadedFile: File | null = null;
   uploadedImage1: any  = null;

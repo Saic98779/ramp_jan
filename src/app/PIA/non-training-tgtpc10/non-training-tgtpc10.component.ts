@@ -189,7 +189,7 @@ export class NonTrainingTgtpc10Component implements OnInit {
  
  
   getPreliminaryDataById(){
-         https://metaverseedu.in/workflow/non-training/all/expenditures?nonTrainingActivityId=1
+         https://ramp-tg.metaversedu.in/workflow/non-training/all/expenditures?nonTrainingActivityId=1
           this._commonService.getDataByUrl(APIS.nontrainingtargets.getNonTrainingtargetsAleapPriliminaryById+this.selectedBudgetHead).subscribe((res: any) => {
              this.getPreliminaryData=res.data;
              this.financialTargetAchievement=0

@@ -149,7 +149,7 @@ export class SampleUiComponent implements OnInit {
  
    loadDistricts(): void {
     this.isLoadingDistricts = true;
-     this._commonService.getDataByUrl(`https://metaverseedu.in/workflow/districts`).subscribe({
+     this._commonService.getDataByUrl(`https://ramp-tg.metaversedu.in/workflow/districts`).subscribe({
       next: (res: any) => {
         this.districts = res || [];
         this.districtsFiltered = [...this.districts];
@@ -183,7 +183,7 @@ export class SampleUiComponent implements OnInit {
 
   loadMandals(districtId: string): void {
     this.isLoadingMandals = true;
-    this._commonService.getDataByUrl(`https://metaverseedu.in/workflow/mandals/${districtId}`).subscribe({
+    this._commonService.getDataByUrl(`https://ramp-tg.metaversedu.in/workflow/mandals/${districtId}`).subscribe({
       next: (res: any) => {
         this.mandals = res || [];
         this.mandalsFiltered = [...this.mandals];
@@ -214,7 +214,7 @@ export class SampleUiComponent implements OnInit {
 
   loadVillages(mandalId: string): void {
     this.isLoadingVillages = true;
-    this._commonService.getDataByUrl(`https://metaverseedu.in/workflow/villages/${mandalId}`).subscribe({
+    this._commonService.getDataByUrl(`https://ramp-tg.metaversedu.in/workflow/villages/${mandalId}`).subscribe({
       next: (res: any) => {
         this.villages = res || [];
         this.villagesFiltered = [...this.villages];
@@ -243,7 +243,7 @@ export class SampleUiComponent implements OnInit {
   loadUnits(villageId: string): void {
     this.isLoadingUnits = true;
     let mandalname=this.mandals.find((v: { mandalId: string; })=>v.mandalId===this.selectedMandal)?.mandalName;
-    this._commonService.getDataByUrl(`https://metaverseedu.in/workflow/units?village=${villageId}&madal=${mandalname}`).subscribe({
+    this._commonService.getDataByUrl(`https://ramp-tg.metaversedu.in/workflow/units?village=${villageId}&madal=${mandalname}`).subscribe({
       next: (res: any) => {
         this.units = res || [];
         this.unitsFiltered = [...this.units];

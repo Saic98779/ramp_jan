@@ -763,7 +763,7 @@ previewFile(file: any, index: number): void {
     };
     return typeClasses[type] || 'bg-secondary';
   }
- readonly BASE_URL = 'https://metaverseedu.in/';
+ readonly BASE_URL = 'https://ramp-tg.metaversedu.in/';
   // File download URL method
   getFileDownloadUrl(file: any): string {
     if (file.filePath) {

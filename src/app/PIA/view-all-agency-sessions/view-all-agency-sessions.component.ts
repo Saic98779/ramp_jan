@@ -72,7 +72,7 @@ export class ViewAllAgencySessionsComponent implements OnInit {
     // setTimeout(() => {
     //   this.previewData = genFile  
     // }, 1000);
-    //https://view.officeapps.live.com/op/embed.aspx?src=https://metaverseedu.in/workflow/program/file/download/107
+    //https://view.officeapps.live.com/op/embed.aspx?src=https://ramp-tg.metaversedu.in/workflow/program/file/download/107
     
     // // this.previewData = this.sanitizer.bypassSecurityTrustResourceUrl(
     // //   `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}?cache='${this.cacheBuster}`
