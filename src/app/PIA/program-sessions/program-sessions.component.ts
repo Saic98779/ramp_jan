@@ -216,7 +216,7 @@ export class ProgramSessionsComponent implements OnInit {
   agencyProgramList: any;
   // programId: any = ''
   getProgramsByAgency() {
-    this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency + this.agencyId}`).subscribe({
+    this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency + '/' + this.agencyId}`).subscribe({
       next: (res: any) => {
         this.agencyProgramList = res?.data
       },

@@ -19,7 +19,7 @@ export const APIS = {
     getAllResource: API_BASE_URL + '/agency/resources/dropdown',
     addResource: API_BASE_URL + '/resource/save',
     getProgramsList: API_BASE_URL + '/programs',
-    getProgramsListByAgency: API_BASE_URL + '/agency/programs/dropdown/',
+    getProgramsListByAgency: API_BASE_URL + '/agency/programs/dropdown',
     getIncompletProgramsListByAgency: API_BASE_URL + '/programs/with-participants/',
     getNewProgramListByAgency: API_BASE_URL + '/programs/status/status-list/',
     getProgramsListByAgencyStatus: API_BASE_URL + '/programs/status',
