@@ -121,7 +121,7 @@ export class NonTrainingTargetsComponent implements OnInit {
     const { richMilestoneId, achievementDetails, ...rest } = this.financialForm.value;
     const dto: any = { ...rest };
     if (richMilestoneId) {
-      dto.richMilestoneIds = [Number(richMilestoneId)];
+      dto.richMilestoneId = Number(richMilestoneId);
     }
     if (this.isPhysicalReportBudget) {
       dto.achievementDetails = achievementDetails || '';
