@@ -64,22 +64,37 @@ export class NonTrainingTargetsComponent implements OnInit {
   editingRowOriginalMilestoneId: any = null;
   editingRowOriginalAmount: number = 0;
   milestoneAmountCap: number | null = null;
-  getRichMilestonesList() {
+  getRichMilestonesList(afterRefresh?: () => void) {
     this._commonService.getDataByUrl(APIS.nontrainingtargets.getRichMilestones).subscribe(
       (res: any) => {
         this.richMilestonesList = Array.isArray(res) ? res : (res?.data || []);
+        if (afterRefresh) afterRefresh();
       },
-      () => { this.richMilestonesList = []; }
+      () => {
+        this.richMilestonesList = [];
+        if (afterRefresh) afterRefresh();
+      }
     );
   }
   onRichMilestoneChange(id: any) {
     const numericId = Number(id);
-    this.selectedRichMilestone = this.richMilestonesList.find(
-      (m: any) => Number(m?.richMilestoneId) === numericId
-    ) || null;
     if (this.financialForm.get('richMilestoneId')) {
       this.financialForm.get('richMilestoneId')?.setValue(numericId || null);
     }
+    if (!numericId) {
+      this.selectedRichMilestone = null;
+      this.milestoneAmountCap = null;
+      this.applyExpenditureAmountValidators();
+      return;
+    }
+    // Re-fetch the list so availableAmount reflects the latest server-side
+    // balance (no per-id endpoint exists; the list GET returns live numbers).
+    this.getRichMilestonesList(() => this.applySelectedMilestone(numericId));
+  }
+  private applySelectedMilestone(numericId: number) {
+    this.selectedRichMilestone = this.richMilestonesList.find(
+      (m: any) => Number(m?.richMilestoneId) === numericId
+    ) || null;
     if (this.selectedRichMilestone) {
       const m = this.selectedRichMilestone;
       // Prefer explicit availableAmount; fall back to amount - consumedAmount.
@@ -658,6 +673,7 @@ getPreliminaryData:any=[]
         next: (res: any) => {
           this.toastrService.success('Data Updated successfully', 'Non Training Progress Data Success!');
           this.getPreliminaryDataById();
+          this.getRichMilestonesList();
           this.resetForm();
           this.isSubmitted = false;
           const modalElement = document.getElementById('addSurvey');
@@ -695,6 +711,7 @@ getPreliminaryData:any=[]
            this.toastrService.success('Data saved successfully','Non Training Progress Data Success!');
            this.getPreliminaryData.push(res.data)
            this.getPreliminaryDataById()
+           this.getRichMilestonesList();
            this.resetForm();
            this.isSubmitted = false;
            const modal1 = bootstrap.Modal.getInstance(document.getElementById('addSurvey'));
