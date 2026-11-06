@@ -144,28 +144,41 @@ getStatus(i:any,ProgramStatusDropdown:any,status:any){
   }
 
   onEditProgram() {
-    if (this.ProgramsDataBasedOnSelection) {
-      // Populate form with existing data
-      this.editProgramForm.patchValue({
-        programTitle: this.ProgramsDataBasedOnSelection.programTitle,
-        startDate: this.convertDateForInput(this.ProgramsDataBasedOnSelection.startDate),
-        endDate: this.convertDateForInput(this.ProgramsDataBasedOnSelection.endDate),
-        startTime: this.ProgramsDataBasedOnSelection.startTime,
-        endTime: this.ProgramsDataBasedOnSelection.endTime,
-        spocName: this.ProgramsDataBasedOnSelection.spocName,
-        spocContactNo: this.ProgramsDataBasedOnSelection.spocContactNo,
-        locationId: this.ProgramsDataBasedOnSelection.locationId ?? null,
-        status: this.ProgramsDataBasedOnSelection.status
+    if (!this.ProgramsDataBasedOnSelection) return;
+    const programId =
+      this.ProgramsDataBasedOnSelection.programId ||
+      this.ProgramsDataBasedOnSelection.id;
+    // The list payload does not carry the program's real location — fetch the
+    // full program so we can preserve it when the user only edits other fields.
+    this._commonService
+      .getById(APIS.programCreation.getSingleProgramsList, programId)
+      .subscribe({
+        next: (res: any) => {
+          const full = res?.data || {};
+          this.editProgramForm.patchValue({
+            programTitle: full.programTitle ?? this.ProgramsDataBasedOnSelection.programTitle,
+            startDate: this.convertDateForInput(full.startDate ?? this.ProgramsDataBasedOnSelection.startDate),
+            endDate: this.convertDateForInput(full.endDate ?? this.ProgramsDataBasedOnSelection.endDate),
+            startTime: full.startTime ?? this.ProgramsDataBasedOnSelection.startTime,
+            endTime: full.endTime ?? this.ProgramsDataBasedOnSelection.endTime,
+            spocName: full.spocName ?? this.ProgramsDataBasedOnSelection.spocName,
+            spocContactNo: full.spocContactNo ?? this.ProgramsDataBasedOnSelection.spocContactNo,
+            // Backend returns the location id under `programLocation`, not
+            // `locationId`. Preserve whatever the server has.
+            locationId: full.programLocation ?? full.locationId ?? null,
+            status: full.status ?? this.ProgramsDataBasedOnSelection.status
+          });
+          const editModal = document.getElementById('editProgramModal');
+          if (editModal) {
+            const modalInstance = new bootstrap.Modal(editModal);
+            modalInstance.show();
+            this.isEditModalOpen = true;
+          }
+        },
+        error: () => {
+          this.toastrService.error('Could not load program details', 'Error');
+        }
       });
-
-      // Show modal
-      const editModal = document.getElementById('editProgramModal');
-      if (editModal) {
-        const modalInstance = new bootstrap.Modal(editModal);
-        modalInstance.show();
-        this.isEditModalOpen = true;
-      }
-    }
   }
 
   convertDateForInput(dateString: string): string {
@@ -201,6 +214,9 @@ getStatus(i:any,ProgramStatusDropdown:any,status:any){
         spocContactNo: parseInt(formValues.spocContactNo),
         status: formValues.status
       };
+      // Only send locationId when the form has a real value fetched from the
+      // server — never guess / default here, otherwise we silently reassign the
+      // program's location.
       const parsedLocationId = parseInt(formValues.locationId);
       if (!isNaN(parsedLocationId)) {
         payload.locationId = parsedLocationId;
