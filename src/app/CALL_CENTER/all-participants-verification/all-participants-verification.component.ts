@@ -76,7 +76,7 @@ export class AllParticipantsVerificationComponent implements OnInit {
     this.programs = [];
     this.selectedProgram = '';
     if (this.selectedAgency) {
-      this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency}${this.selectedAgency}`).subscribe({
+      this._commonService.getDataByUrl(`${APIS.programCreation.getProgramsListByAgency}/${this.selectedAgency}`).subscribe({
         next: (data: any) => {
           this.programs = data.data;
         },
