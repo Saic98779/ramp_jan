@@ -154,7 +154,7 @@ getStatus(i:any,ProgramStatusDropdown:any,status:any){
         endTime: this.ProgramsDataBasedOnSelection.endTime,
         spocName: this.ProgramsDataBasedOnSelection.spocName,
         spocContactNo: this.ProgramsDataBasedOnSelection.spocContactNo,
-        locationId: this.ProgramsDataBasedOnSelection.locationId || 1,
+        locationId: this.ProgramsDataBasedOnSelection.locationId ?? null,
         status: this.ProgramsDataBasedOnSelection.status
       });
 
@@ -191,7 +191,7 @@ getStatus(i:any,ProgramStatusDropdown:any,status:any){
   onSubmitEdit() {
     const formValues = this.editProgramForm.value;
       console.log(formValues)
-      const payload = {
+      const payload: any = {
         programTitle: formValues.programTitle,
         startDate: this.convertDateForAPI(formValues.startDate),
         endDate: this.convertDateForAPI(formValues.endDate),
@@ -199,9 +199,12 @@ getStatus(i:any,ProgramStatusDropdown:any,status:any){
         endTime: formValues.endTime,
         spocName: formValues.spocName,
         spocContactNo: parseInt(formValues.spocContactNo),
-        locationId: parseInt(formValues.locationId),
         status: formValues.status
       };
+      const parsedLocationId = parseInt(formValues.locationId);
+      if (!isNaN(parsedLocationId)) {
+        payload.locationId = parsedLocationId;
+      }
 
       const programId = this.ProgramsDataBasedOnSelection.programId || this.ProgramsDataBasedOnSelection.id;
          console.log(payload,'paylo ')
