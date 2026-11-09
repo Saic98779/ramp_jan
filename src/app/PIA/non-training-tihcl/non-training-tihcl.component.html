@@ -142,9 +142,14 @@
                                             <td>{{ item?.sanctionedAmount | commaSeperationIndia }}</td>
                                             <td>{{ item?.collectionDate }}</td>
                                             <td>{{ item?.totalDisbursedAmount | commaSeperationIndia }}</td>
-                                           
-                                           
-                                            
+
+
+                                        </tr>
+                                        <tr *ngIf="isBharathramLogin && getCorpusData?.length" class="fw-600 bg-light">
+                                            <td colspan="5" class="text-end">Total</td>
+                                            <td>{{ totalSanctionedAmount | commaSeperationIndia }}</td>
+                                            <td></td>
+                                            <td>{{ totalAmountReleased | commaSeperationIndia }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

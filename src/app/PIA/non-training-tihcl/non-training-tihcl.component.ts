@@ -123,19 +123,34 @@ export class NonTrainingTihclComponent implements OnInit {
         );
     }
  getCorpusData:any=[]
+ totalSanctionedAmount: number = 0;
+ totalAmountReleased: number = 0;
+ get isBharathramLogin(): boolean {
+   return (this.loginsessionDetails?.email || '').toLowerCase() === 'bharathram@tihcl.org';
+ }
  getDataFianance(){
      this._commonService.getDataByUrl(APIS.nontrainingtargets.tihcl.getCorpusList).subscribe((res: any) => {
             this.getCorpusData=res.data;
             this.physicalTargetAchievement=0
             this.physicalTargetAchievement=this.getCorpusData?.length
             this.financialTargetAchievement=0
+            this.totalSanctionedAmount = 0;
+            this.totalAmountReleased = 0;
             this.getCorpusData?.map((item:any)=>{
-              this.financialTargetAchievement+=Number(item?.sanctionedAmount)
+              const sanctioned = Number(item?.sanctionedAmount) || 0;
+              const released = Number(item?.totalDisbursedAmount) || 0;
+              this.totalSanctionedAmount += sanctioned;
+              this.totalAmountReleased += released;
+              // bharathram@tihcl.org: financial achievement = Σ Amount Released.
+              // Everyone else keeps the original behaviour (Σ Sanctioned Amount).
+              this.financialTargetAchievement += this.isBharathramLogin ? released : sanctioned;
             })
-        
+
         }, (error) => {
           // this.toastrService.error(error.message);
           this.financialTargetAchievement=0
+          this.totalSanctionedAmount = 0;
+          this.totalAmountReleased = 0;
         });
  }
   // final submission

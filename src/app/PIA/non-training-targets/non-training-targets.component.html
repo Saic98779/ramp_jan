@@ -72,7 +72,7 @@
        <!-- begin:: Preliminary survey for selection of potential SHGs -->
        <!-- isPhysicalReportBudget || selectedBudgetHead=='68' -->
        <div class="card budgets mb-3 "
-         *ngIf="isRich6A || isRich6B || selectedBudgetHead=='68' || selectedBudgetHead=='69' || isPhysicalReportBudget || selectedBudgetHead=='72' || selectedBudgetHead=='128' || selectedBudgetHead=='70' || this.selectedBudgetHead=='134' || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='137'  || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='139' || this.selectedBudgetHead=='138' || this.selectedBudgetHead=='140' || this.selectedBudgetHead=='141' ">
+         *ngIf="!isMiscellaneousSubActivity && (isRich6A || isRich6B || selectedBudgetHead=='68' || selectedBudgetHead=='69' || isPhysicalReportBudget || selectedBudgetHead=='72' || selectedBudgetHead=='128' || selectedBudgetHead=='70' || this.selectedBudgetHead=='134' || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='137'  || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='139' || this.selectedBudgetHead=='138' || this.selectedBudgetHead=='140' || this.selectedBudgetHead=='141')">
 
          <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
 
@@ -995,7 +995,7 @@
          </div>
        </div>
        <!-- end:: Contingency fund -->
-        <div class="card budgets mb-3" *ngIf="showRestrictedTabCard || selectedBudgetHead=='70' || this.selectedBudgetHead=='134'  || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='137' || this.selectedBudgetHead=='139'">
+        <div class="card budgets mb-3" *ngIf="!isMiscellaneousSubActivity && (showRestrictedTabCard || selectedBudgetHead=='70' || this.selectedBudgetHead=='134'  || this.selectedBudgetHead=='135' || this.selectedBudgetHead=='136' || this.selectedBudgetHead=='137' || this.selectedBudgetHead=='139')">
         <div class="card-body">
           <!-- Tab Navigation -->
           <ul class="nav nav-tabs mb-3" id="handHoldingTabs" role="tablist" *ngIf="!isRich6A">

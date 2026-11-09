@@ -59,6 +59,13 @@ export class NonTrainingTargetsComponent implements OnInit {
     return s === '71' || s === '68'
         || s === '157' || s === '158' || s === '151' || s === '152' || s === '153' || s === '156' || s === '162';
   }
+  // RICH_6A sub-activity 128 (Miscellaneous) and RICH_6B sub-activity 162
+  // (Miscellaneous Activity) should render nothing — treat as blank page.
+  get isMiscellaneousSubActivity(): boolean {
+    if (!this.isRestrictedAgency) return false;
+    const s = String(this.selectedBudgetHead);
+    return s === '128' || s === '162';
+  }
   richMilestonesList: any[] = [];
   selectedRichMilestone: any = null;
   editingRowOriginalMilestoneId: any = null;
