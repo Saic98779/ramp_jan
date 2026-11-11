@@ -10,6 +10,7 @@ import { event } from 'jquery';
 declare var bootstrap: any;
 declare var $: any;
 import { LoaderService } from '@app/common_components/loader-service.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-veiw-program-creation',
@@ -901,7 +902,7 @@ if (editSessionModal) {
             this.toastrService.info('No records to download for this tab.');
             return;
           }
-          this.exportRowsAsCsv(rows, `Programs_${this.statusDownloadLabel.replace(/\s+/g, '_')}.csv`);
+          this.exportRowsAsXlsx(rows, `Programs_${this.statusDownloadLabel.replace(/\s+/g, '_')}.xlsx`);
         },
         error: (err: any) => {
           this.isStatusDownloadLoading = false;
@@ -909,7 +910,10 @@ if (editSessionModal) {
         }
       });
     }
-    private exportRowsAsCsv(rows: any[], fileName: string): void {
+    private exportRowsAsXlsx(rows: any[], fileName: string): void {
+      // Column order mirrors the on-screen DataTable (S.No, Start Date, End
+      // Date, Program Title, Status, Program Location, Agency, Activity,
+      // Sub Activity, SPOC Name, SPOC Contact No.).
       const columns: { header: string; key: string }[] = [
         { header: 'Start Date', key: 'startDate' },
         { header: 'End Date', key: 'endDate' },
@@ -922,24 +926,14 @@ if (editSessionModal) {
         { header: 'SPOC Name', key: 'spocName' },
         { header: 'SPOC Contact No.', key: 'spocContactNo' }
       ];
-      const escape = (v: any): string => {
-        const s = v === null || v === undefined ? '' : String(v);
-        return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-      };
-      const lines: string[] = [];
-      lines.push(['S.No', ...columns.map(c => c.header)].map(escape).join(','));
-      rows.forEach((row, i) => {
-        lines.push([i + 1, ...columns.map(c => row?.[c.key])].map(escape).join(','));
-      });
-      const csv = '﻿' + lines.join('\r\n');  // BOM so Excel opens UTF-8 correctly
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(objectUrl);
+      const header = ['S.No', ...columns.map(c => c.header)];
+      const body = rows.map((row, i) => [
+        i + 1,
+        ...columns.map(c => (row?.[c.key] === null || row?.[c.key] === undefined) ? '' : row[c.key])
+      ]);
+      const sheet = XLSX.utils.aoa_to_sheet([header, ...body]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, sheet, 'Programs');
+      XLSX.writeFile(workbook, fileName);
     }
 }
