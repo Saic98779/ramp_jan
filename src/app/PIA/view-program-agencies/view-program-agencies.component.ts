@@ -8,6 +8,7 @@ import 'datatables.net-buttons-dt';
 import 'datatables.net-responsive-dt';
 declare var $: any;
 import { LoaderService } from '@app/common_components/loader-service.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-view-program-agencies',
@@ -531,6 +532,85 @@ onDateRangeChange() {
       link.click();
       link.remove();
       this.loader.hide();
+    }
+
+    // ---------- Download the currently-selected status tab as Excel ----------
+    isStatusDownloadLoading: boolean = false;
+    private readonly statusTabLabels: Record<string, string> = {
+      programsScheduled: 'Scheduled',
+      programsOverdue: 'Overdue',
+      programsYetToBegin: 'Yet to Begin',
+      programsInProcess: 'In Progress',
+      programsCompletedDataPending: 'Completed Data Pending',
+      programExpenditureUpdated: 'Expenditure Updated',
+      programExpenditureApproved: 'Expenditure Verified'
+    };
+    get statusDownloadLabel(): string {
+      const key = this.StatusData || 'programsScheduled';
+      return this.statusTabLabels[key] || 'Programs';
+    }
+    private formatDateDDMMYYYY(d: any): string {
+      if (!d || Object.prototype.toString.call(d) !== '[object Date]' || isNaN(d.getTime())) return '';
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+    downloadStatusTab(): void {
+      const agency = this.selectedAgencyId !== undefined && this.selectedAgencyId !== null
+        ? this.selectedAgencyId
+        : this.agencyId;
+      if (agency === undefined || agency === null || agency === '') {
+        this.toastrService.info('Please select an agency first.');
+        return;
+      }
+      const status = this.StatusData || 'programsScheduled';
+      const fromDate = this.formatDateDDMMYYYY(this.dateRange?.start);
+      const toDate = this.formatDateDDMMYYYY(this.dateRange?.end);
+      let url = `${APIS.programCreation.getProgramsListByAgencyByStatusDetails}${agency}?status=${status}&page=0&size=10000`;
+      if (fromDate) url += `&fromDate=${fromDate}`;
+      if (toDate) url += `&toDate=${toDate}`;
+      this.isStatusDownloadLoading = true;
+      this._commonService.getDataByUrl(url).subscribe({
+        next: (res: any) => {
+          this.isStatusDownloadLoading = false;
+          const rows: any[] = Array.isArray(res?.data) ? res.data : [];
+          if (!rows.length) {
+            this.toastrService.info('No records to download for this tab.');
+            return;
+          }
+          this.exportRowsAsXlsx(rows, `Programs_${this.statusDownloadLabel.replace(/\s+/g, '_')}.xlsx`);
+        },
+        error: (err: any) => {
+          this.isStatusDownloadLoading = false;
+          this.toastrService.error(err?.message || 'Failed to download programs.');
+        }
+      });
+    }
+    private exportRowsAsXlsx(rows: any[], fileName: string): void {
+      // Column order + headers mirror the on-screen DataTable.
+      const columns: { header: string; key: string }[] = [
+        { header: 'Start Date', key: 'startDate' },
+        { header: 'End Date', key: 'endDate' },
+        { header: 'Title Of Program', key: 'programTitle' },
+        { header: 'Status', key: 'status' },
+        { header: 'Program Location', key: 'programLocationName' },
+        { header: 'Agency Name', key: 'agencyName' },
+        { header: 'Type Of Activity', key: 'activityName' },
+        { header: 'Sub Activity', key: 'subActivityName' },
+        { header: 'District', key: 'district' },
+        { header: 'SPOC Name', key: 'spocName' },
+        { header: 'SPOC Contact No.', key: 'spocContactNo' }
+      ];
+      const header = ['S.No', ...columns.map(c => c.header)];
+      const body = rows.map((row, i) => [
+        i + 1,
+        ...columns.map(c => (row?.[c.key] === null || row?.[c.key] === undefined) ? '' : row[c.key])
+      ]);
+      const sheet = XLSX.utils.aoa_to_sheet([header, ...body]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, sheet, 'Programs');
+      XLSX.writeFile(workbook, fileName);
     }
   }
 
