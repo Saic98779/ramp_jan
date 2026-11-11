@@ -911,18 +911,17 @@ if (editSessionModal) {
       });
     }
     private exportRowsAsXlsx(rows: any[], fileName: string): void {
-      // Column order mirrors the on-screen DataTable (S.No, Start Date, End
-      // Date, Program Title, Status, Program Location, Agency, Activity,
-      // Sub Activity, SPOC Name, SPOC Contact No.).
+      // Column order + headers mirror the on-screen DataTable exactly.
       const columns: { header: string; key: string }[] = [
         { header: 'Start Date', key: 'startDate' },
         { header: 'End Date', key: 'endDate' },
-        { header: 'Program Title', key: 'programTitle' },
+        { header: 'Title Of Program', key: 'programTitle' },
         { header: 'Status', key: 'status' },
         { header: 'Program Location', key: 'programLocationName' },
         { header: 'Agency Name', key: 'agencyName' },
-        { header: 'Activity', key: 'activityName' },
+        { header: 'Type Of Activity', key: 'activityName' },
         { header: 'Sub Activity', key: 'subActivityName' },
+        { header: 'District', key: 'district' },
         { header: 'SPOC Name', key: 'spocName' },
         { header: 'SPOC Contact No.', key: 'spocContactNo' }
       ];
