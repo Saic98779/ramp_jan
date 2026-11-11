@@ -557,7 +557,7 @@ onDateRangeChange() {
       return `${day}-${month}-${year}`;
     }
     downloadStatusTab(): void {
-      const agency = this.selectedAgencyId !== undefined && this.selectedAgencyId !== null
+      const agency = this.selectedAgencyId !== undefined && this.selectedAgencyId !== null && this.selectedAgencyId !== ''
         ? this.selectedAgencyId
         : this.agencyId;
       if (agency === undefined || agency === null || agency === '') {
@@ -567,23 +567,45 @@ onDateRangeChange() {
       const status = this.StatusData || 'programsScheduled';
       const fromDate = this.formatDateDDMMYYYY(this.dateRange?.start);
       const toDate = this.formatDateDDMMYYYY(this.dateRange?.end);
-      let url = `${APIS.programCreation.getProgramsListByAgencyByStatusDetails}${agency}?status=${status}&page=0&size=10000`;
-      if (fromDate) url += `&fromDate=${fromDate}`;
-      if (toDate) url += `&toDate=${toDate}`;
+      const base = `${APIS.programCreation.getProgramsListByAgencyByStatusDetails}${agency}?status=${status}`;
+      const dateParams = (fromDate ? `&fromDate=${fromDate}` : '') + (toDate ? `&toDate=${toDate}` : '');
+      // Step 1: tiny probe to learn totalElements, so step 2 only fetches what
+      // actually exists (admin's "All Agencies" view can be 8-9 MB / ~70s
+      // otherwise and users give up before the request returns).
       this.isStatusDownloadLoading = true;
-      this._commonService.getDataByUrl(url).subscribe({
-        next: (res: any) => {
-          this.isStatusDownloadLoading = false;
-          const rows: any[] = Array.isArray(res?.data) ? res.data : [];
-          if (!rows.length) {
+      this.loader?.show?.('Preparing download…');
+      this._commonService.getDataByUrl(`${base}&page=0&size=1${dateParams}`).subscribe({
+        next: (probe: any) => {
+          const total = Number(probe?.totalElements) || (Array.isArray(probe?.data) ? probe.data.length : 0);
+          if (!total) {
+            this.isStatusDownloadLoading = false;
+            this.loader?.hide?.();
             this.toastrService.info('No records to download for this tab.');
             return;
           }
-          this.exportRowsAsXlsx(rows, `Programs_${this.statusDownloadLabel.replace(/\s+/g, '_')}.xlsx`);
+          this.loader?.show?.(`Downloading ${total} rows…`);
+          this._commonService.getDataByUrl(`${base}&page=0&size=${total}${dateParams}`).subscribe({
+            next: (res: any) => {
+              this.isStatusDownloadLoading = false;
+              this.loader?.hide?.();
+              const rows: any[] = Array.isArray(res?.data) ? res.data : [];
+              if (!rows.length) {
+                this.toastrService.info('No records to download for this tab.');
+                return;
+              }
+              this.exportRowsAsXlsx(rows, `Programs_${this.statusDownloadLabel.replace(/\s+/g, '_')}.xlsx`);
+            },
+            error: (err: any) => {
+              this.isStatusDownloadLoading = false;
+              this.loader?.hide?.();
+              this.toastrService.error(err?.message || err?.error?.message || 'Failed to download programs.');
+            }
+          });
         },
         error: (err: any) => {
           this.isStatusDownloadLoading = false;
-          this.toastrService.error(err?.message || 'Failed to download programs.');
+          this.loader?.hide?.();
+          this.toastrService.error(err?.message || err?.error?.message || 'Failed to download programs.');
         }
       });
     }
