@@ -845,7 +845,7 @@ if (editSessionModal) {
         })
     }
     downloadProgram(type:any){
-     
+
       let linkUrl = type=='excel'?APIS.programCreation.downloadProgramsDataExcel+this.agencyId:APIS.programCreation.downloadProgramsDataPdf+this.agencyId
       const link = document.createElement("a");
       link.setAttribute("download", linkUrl);
@@ -854,5 +854,92 @@ if (editSessionModal) {
       document.body.appendChild(link);
       link.click();
       link.remove();
+    }
+
+    // ---------- Download the currently-selected status tab as Excel-friendly CSV ----------
+    isStatusDownloadLoading: boolean = false;
+    private readonly statusTabLabels: Record<string, string> = {
+      programsScheduled: 'Scheduled',
+      programsOverdue: 'Overdue',
+      programsYetToBegin: 'Yet to Begin',
+      programsInProcess: 'In Progress',
+      programsCompletedDataPending: 'Completed Data Pending',
+      programExpenditureUpdated: 'Expenditure Updated',
+      programExpenditureApproved: 'Expenditure Verified'
+    };
+    get statusDownloadLabel(): string {
+      const key = this.StatusData || 'programsScheduled';
+      return this.statusTabLabels[key] || 'Programs';
+    }
+    private formatDateDDMMYYYY(d: any): string {
+      if (!d || Object.prototype.toString.call(d) !== '[object Date]' || isNaN(d.getTime())) return '';
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+    downloadStatusTab(): void {
+      const agency = this.selectedAgencyId !== undefined && this.selectedAgencyId !== null
+        ? this.selectedAgencyId
+        : this.agencyId;
+      if (agency === undefined || agency === null || agency === '') {
+        this.toastrService.info('Please select an agency first.');
+        return;
+      }
+      const status = this.StatusData || 'programsScheduled';
+      const fromDate = this.formatDateDDMMYYYY(this.dateRange?.start);
+      const toDate = this.formatDateDDMMYYYY(this.dateRange?.end);
+      let url = `${APIS.programCreation.getProgramsListByAgencyByStatusDetails}${agency}?status=${status}&page=0&size=10000`;
+      if (fromDate) url += `&fromDate=${fromDate}`;
+      if (toDate) url += `&toDate=${toDate}`;
+      this.isStatusDownloadLoading = true;
+      this._commonService.getDataByUrl(url).subscribe({
+        next: (res: any) => {
+          this.isStatusDownloadLoading = false;
+          const rows: any[] = Array.isArray(res?.data) ? res.data : [];
+          if (!rows.length) {
+            this.toastrService.info('No records to download for this tab.');
+            return;
+          }
+          this.exportRowsAsCsv(rows, `Programs_${this.statusDownloadLabel.replace(/\s+/g, '_')}.csv`);
+        },
+        error: (err: any) => {
+          this.isStatusDownloadLoading = false;
+          this.toastrService.error(err?.message || 'Failed to download programs.');
+        }
+      });
+    }
+    private exportRowsAsCsv(rows: any[], fileName: string): void {
+      const columns: { header: string; key: string }[] = [
+        { header: 'Start Date', key: 'startDate' },
+        { header: 'End Date', key: 'endDate' },
+        { header: 'Program Title', key: 'programTitle' },
+        { header: 'Status', key: 'status' },
+        { header: 'Program Location', key: 'programLocationName' },
+        { header: 'Agency Name', key: 'agencyName' },
+        { header: 'Activity', key: 'activityName' },
+        { header: 'Sub Activity', key: 'subActivityName' },
+        { header: 'SPOC Name', key: 'spocName' },
+        { header: 'SPOC Contact No.', key: 'spocContactNo' }
+      ];
+      const escape = (v: any): string => {
+        const s = v === null || v === undefined ? '' : String(v);
+        return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const lines: string[] = [];
+      lines.push(['S.No', ...columns.map(c => c.header)].map(escape).join(','));
+      rows.forEach((row, i) => {
+        lines.push([i + 1, ...columns.map(c => row?.[c.key])].map(escape).join(','));
+      });
+      const csv = '﻿' + lines.join('\r\n');  // BOM so Excel opens UTF-8 correctly
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
     }
 }
